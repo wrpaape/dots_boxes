@@ -22,8 +22,9 @@ var Board = React.createClass({
   },
   render: function() {
     var board = this.state.board;
-    var lines = [];
+    var rows = [];
     for (var i = 0; i < board.length; i++) {
+      var lines = [];
       var alignment = i % 2 === 0 ? 'horiz' : 'vert';
       for (var j = 0; j < board[i].length; j++) {
         var className = alignment;
@@ -32,14 +33,14 @@ var Board = React.createClass({
         } else if (board[i][j] < 0) {
           className += ' computer';
         }
-        lines.push(<hr className={ className } />);
+        lines.push(<hr key={ 'line-' + i + '-' + j } className={ className } />);
       }
-      lines.push(<br />);
+      rows.push(<div key={ 'row-' + i } className='row'>{ lines }</div>);
     }
 
     return(
-      <div>
-        { lines }
+      <div className='board'>
+        { rows }
       </div>
     )
   }

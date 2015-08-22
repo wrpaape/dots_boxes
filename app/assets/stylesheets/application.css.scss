@@ -1,10 +1,23 @@
-hr {
-  &.horiz {
-    width: 100px;
-    height: 1px;
-  }
-  &.vert {
-    width: 1px;
-    height: 100px;
+div.board {
+  text-align: center;
+}
+
+div.row {
+  margin-bottom: -10px;
+  hr {
+    display: inline-block;
+    border: none;
+    margin: 5px;
+    background-color: black;
+    &.horiz {
+      width: 100px;
+      height: 2px;
+    }
+    &.vert {
+      width: 2px;
+      height: 100px;
+      margin-left: 54px;
+      margin-right: 54px;
+    }
   }
 }
