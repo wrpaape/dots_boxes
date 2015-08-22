@@ -1,12 +1,10 @@
-@import 'bootstrap-sprockets';
-@import 'bootstrap';
-//You need to now manually import every other scss file.
 hr {
-  .horiz {
-
+  &.horiz {
+    width: 100px;
+    height: 1px;
   }
-  .vert {
-    width: 0px;
-    height: 100%;
+  &.vert {
+    width: 1px;
+    height: 100px;
   }
 }
