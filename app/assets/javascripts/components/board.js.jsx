@@ -25,7 +25,7 @@ var Board = React.createClass({
   componentDidUpdate: function() {
     var turn = this.state.turn;
     if (turn !== 0) {
-      this.checkGameOver();
+      this.checkGameover();
     }
     if (turn === -1) {
       var lines = this.state.lines;
@@ -34,11 +34,11 @@ var Board = React.createClass({
         i = Math.floor(Math.random() * lines.length);
         j = Math.floor(Math.random() * lines[i].length);
       } while (lines[i][j] !== 0);
-
       this.selectLine(i, j);
     }
   },
   render: function() {
+    var turn = this.state.turn;
     var lines = this.state.lines;
     var boxes = this.state.boxes;
     var winner = this.state.winner;
@@ -78,11 +78,16 @@ var Board = React.createClass({
       }
       rows.push(<div key={ 'row-' + i } className='row'>{ rowLines }</div>);
     }
-
+    var gameover = turn === 0 ? ' gameover' : '';
+    var gameoverText = winner === 'tie' ? 'tie game' : winner + ' wins';
     return(
-      <div className='board'>
-        <div className={ 'gameover ' + winner } />
-        { rows }
+      <div className='board' >
+        <div className={ 'gameover-text' + gameover }>
+          { gameoverText }
+        </div>
+        <div className={ 'rows' + gameover }>
+          { rows }
+        </div>
       </div>
     )
   },
@@ -98,7 +103,6 @@ var Board = React.createClass({
         boxes[m][n] = lines[i - 1][j] + lines[i][j] + lines[i][j + 1] + lines[i + 1][j];
       }
     }
-
     return boxes;
   },
   selectLine: function(i, j) {
@@ -114,7 +118,7 @@ var Board = React.createClass({
       })
     }
   },
-  checkGameOver: function() {
+  checkGameover: function() {
     var lines = this.state.lines;
     var flatLines = lines.reduce(function(a, b) {
       return a.concat(b);
