@@ -18,19 +18,21 @@ var Board = React.createClass({
     return({
       turn: turn,
       lines: lines,
-      boxes: boxes
+      boxes: boxes,
+      winner: ''
     });
   },
   componentDidUpdate: function() {
     var turn = this.state.turn;
-    if (turn < 0) {
+    if (turn !== 0) {
+      this.checkGameOver();
+    }
+    if (turn === -1) {
       var lines = this.state.lines;
-      var i;
-      var j;
+      var i, j;
       do {
         i = Math.floor(Math.random() * lines.length);
         j = Math.floor(Math.random() * lines[i].length);
-        console.log(i + ' ' + j);
       } while (lines[i][j] !== 0);
 
       this.selectLine(i, j);
@@ -39,30 +41,37 @@ var Board = React.createClass({
   render: function() {
     var lines = this.state.lines;
     var boxes = this.state.boxes;
+    var winner = this.state.winner;
     var rows = [];
     for (var i = 0; i < lines.length; i++) {
       var rowLines = [];
       var alignment = i % 2 === 0 ? 'horiz' : 'vert';
       for (var j = 0; j < lines[i].length; j++) {
         var className = alignment;
-        if (lines[i][j] > 0) {
-          className += ' player';
-        } else if (lines[i][j] < 0) {
-          className += ' computer';
-        } else {
-          className += ' open';
+        switch (lines[i][j]) {
+          case 1:
+            className += ' player';
+            break;
+          case -1:
+            className += ' computer';
+            break;
+          default:
+            className += ' open';
         }
         rowLines.push(<hr key={ 'line-' + i + '-' + j } className={ className } onClick={ this.selectLine.bind(this, i, j) } />);
         if (alignment === 'vert' && j < lines[i].length - 1) {
           var m = (i - 1) / 2;
           var n = j;
           var className;
-          if (boxes[m][n] === 4) {
-            className = 'player';
-          } else if (boxes[m][n] === -4) {
-            className = 'computer';
-          } else {
-            className = 'open';
+          switch (boxes[m][n]) {
+            case 4:
+              className = 'player';
+              break;
+            case -4:
+              className = 'computer';
+              break;
+            default:
+              className = 'open';
           }
           rowLines.push(<div key={ 'box-' + m + '-' + n } className={ className } />);
         }
@@ -72,6 +81,7 @@ var Board = React.createClass({
 
     return(
       <div className='board'>
+        <div className={ 'gameover ' + winner } />
         { rows }
       </div>
     )
@@ -88,10 +98,10 @@ var Board = React.createClass({
         boxes[m][n] = lines[i - 1][j] + lines[i][j] + lines[i][j + 1] + lines[i + 1][j];
       }
     }
+
     return boxes;
   },
   selectLine: function(i, j) {
-
     var lines = this.state.lines;
     if (lines[i][j] === 0) {
       var turn = this.state.turn;
@@ -101,6 +111,37 @@ var Board = React.createClass({
         turn: -turn,
         lines: lines,
         boxes: boxes
+      })
+    }
+  },
+  checkGameOver: function() {
+    var lines = this.state.lines;
+    var flatLines = lines.reduce(function(a, b) {
+      return a.concat(b);
+    });
+    if (flatLines.indexOf(0) === -1) {
+      var boxes = this.state.boxes;
+      var numPlayer = 0, numComputer = 0;
+      for (var m = 0; m < boxes.length; m++) {
+        for (var n = 0; n < boxes[m].length; n++) {
+          switch (boxes[m][n]) {
+            case 4:
+              numPlayer++;
+              break;
+            case -4:
+              numComputer++;
+          }
+        }
+      }
+      var winner;
+      if (numPlayer === numComputer) {
+        winner = 'tie';
+      } else {
+        winner = numPlayer > numComputer ? 'player' : 'computer';
+      }
+      this.setState({
+        turn: 0,
+        winner: winner
       })
     }
   }
