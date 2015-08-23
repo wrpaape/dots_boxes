@@ -1,23 +1,49 @@
+$player-color: blue;
+$computer-color: red;
+
 div.board {
   text-align: center;
-}
-
-div.row {
-  margin-bottom: -10px;
-  hr {
-    display: inline-block;
-    border: none;
-    margin: 5px;
-    background-color: black;
-    &.horiz {
-      width: 100px;
-      height: 2px;
+  div.row {
+    margin-bottom: -20px;
+    hr {
+      display: inline-block;
+      border: 0;
+      background-color: black;
+      &.horiz {
+        width: 100px;
+        height: 8px;
+        margin: 8px 4px;
+      }
+      &.vert {
+        width: 8px;
+        height: 100px;
+      }
+      &.open:hover {
+        cursor: pointer;
+      }
+      &.player {
+        background-color: $player-color;
+      }
+      &.computer {
+        background-color: $computer-color;
+      }
     }
-    &.vert {
-      width: 2px;
+    div {
+      display: inline-block;
+      box-sizing: border-box;
+      width: 100px;
       height: 100px;
-      margin-left: 54px;
-      margin-right: 54px;
+      border: 2px solid white;
+      margin-bottom: 8px;
+      &.open {
+        background-color: white;
+      }
+      &.player {
+        background-color: $player-color;
+      }
+      &.computer {
+        background-color: $computer-color;
+      }
     }
   }
 }
