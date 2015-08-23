@@ -4,8 +4,8 @@
 var Board = React.createClass({
   getInitialState: function() {
     var turn = this.props.players[0];
-    var rows = this.props.grid.rows;
-    var cols = this.props.grid.cols;
+    var rows = this.props.rows;
+    var cols = this.props.cols;
     var lines = [];
     for (var i = 0; i < 2 * rows + 1; i++) {
       var numLines = i % 2 === 0 ? cols : cols + 1;
@@ -20,6 +20,21 @@ var Board = React.createClass({
       lines: lines,
       boxes: boxes
     });
+  },
+  componentDidUpdate: function() {
+    var turn = this.state.turn;
+    if (turn < 0) {
+      var lines = this.state.lines;
+      var i;
+      var j;
+      do {
+        i = Math.floor(Math.random() * lines.length);
+        j = Math.floor(Math.random() * lines[i].length);
+        console.log(i + ' ' + j);
+      } while (lines[i][j] !== 0);
+
+      this.selectLine(i, j);
+    }
   },
   render: function() {
     var lines = this.state.lines;
@@ -37,7 +52,7 @@ var Board = React.createClass({
         } else {
           className += ' open';
         }
-        rowLines.push(<hr key={ 'line-' + i + '-' + j } className={ className } onClick={ this.handleClick.bind(this, i, j) } />);
+        rowLines.push(<hr key={ 'line-' + i + '-' + j } className={ className } onClick={ this.selectLine.bind(this, i, j) } />);
         if (alignment === 'vert' && j < lines[i].length - 1) {
           var m = (i - 1) / 2;
           var n = j;
@@ -62,28 +77,31 @@ var Board = React.createClass({
     )
   },
   getBoxes: function(lines) {
-    var rows = this.props.grid.rows;
-    var cols = this.props.grid.cols;
+    var rows = this.props.rows;
+    var cols = this.props.cols;
     var boxes = [];
     for (var m = 0; m < rows; m++) {
-      var i = 2 * m;
+      var i = 2 * m + 1;
       boxes[m] = new Array(cols);
       for (var n = 0; n < cols; n++) {
         var j = n;
-        boxes[m][n] = lines[i][j] + lines[i + 1][j] + lines[i + 1][j + 1] + lines[i + 2][j];
+        boxes[m][n] = lines[i - 1][j] + lines[i][j] + lines[i][j + 1] + lines[i + 1][j];
       }
     }
     return boxes;
   },
-  handleClick: function(i, j) {
-    var turn = this.state.turn;
+  selectLine: function(i, j) {
+
     var lines = this.state.lines;
-    lines[i][j] = turn;
-    var boxes = this.getBoxes(lines);
-    this.setState({
-      turn: -turn,
-      lines: lines,
-      boxes: boxes
-    })
+    if (lines[i][j] === 0) {
+      var turn = this.state.turn;
+      lines[i][j] = turn;
+      var boxes = this.getBoxes(lines);
+      this.setState({
+        turn: -turn,
+        lines: lines,
+        boxes: boxes
+      })
+    }
   }
 });
