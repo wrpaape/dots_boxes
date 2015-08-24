@@ -6,19 +6,33 @@ var Board = React.createClass({
     var turn = this.props.players[0];
     var rows = this.props.rows;
     var cols = this.props.cols;
-    var lines = [];
+    var lines = [], openLines = [], boxes = [], openBoxes = [];
     for (var i = 0; i < 2 * rows + 1; i++) {
-      var numLines = i % 2 === 0 ? cols : cols + 1;
+      var numLines = cols;
+      var m = (i - 1) / 2;
+      if (i % 2 !== 0) {
+        numLines++;
+        boxes[m] = new Array(cols);
+      }
       lines[i] = new Array(numLines);
       for (var j = 0; j < numLines; j++) {
         lines[i][j] = 0;
+        openLines.push([i, j]);
+        if (i % 2 !== 0 && j < cols) {
+          var n = j;
+          boxes[m][n] = 0;
+          openBoxes.push([m, n]);
+        }
       }
     }
-    var boxes = this.getBoxes(lines);
     return({
       turn: turn,
       lines: lines,
+      openLines: openLines,
+      selectedLines: [],
       boxes: boxes,
+      openBoxes: openBoxes,
+      closedBoxes: [],
       winner: ''
     });
   },
@@ -64,10 +78,10 @@ var Board = React.createClass({
           var n = j;
           var className;
           switch (boxes[m][n]) {
-            case 4:
+            case 1:
               className = 'player';
               break;
-            case -4:
+            case -1:
               className = 'computer';
               break;
             default:
@@ -91,30 +105,75 @@ var Board = React.createClass({
       </div>
     )
   },
-  getBoxes: function(lines) {
-    var rows = this.props.rows;
-    var cols = this.props.cols;
-    var boxes = [];
-    for (var m = 0; m < rows; m++) {
-      var i = 2 * m + 1;
-      boxes[m] = new Array(cols);
-      for (var n = 0; n < cols; n++) {
-        var j = n;
-        boxes[m][n] = lines[i - 1][j] + lines[i][j] + lines[i][j + 1] + lines[i + 1][j];
-      }
-    }
-    return boxes;
-  },
+  // updateBoxes: function(lines) {
+  //   var rows = this.props.rows;
+  //   var cols = this.props.cols;
+  //   var boxes = [];
+  //   for (var m = 0; m < rows; m++) {
+  //     var i = 2 * m + 1;
+  //     boxes[m] = new Array(cols);
+  //     for (var n = 0; n < cols; n++) {
+  //       var j = n;
+  //       boxes[m][n] = lines[i - 1][j] + lines[i][j] + lines[i][j + 1] + lines[i + 1][j];
+  //     }
+  //   }
+  //   return boxes;
+  // },
   selectLine: function(i, j) {
     var lines = this.state.lines;
     if (lines[i][j] === 0) {
       var turn = this.state.turn;
+      var openLines = this.state.openLines;
+      var selectedLines = this.state.selectedLines;
+      var boxes = this.state.boxes;
+      var openBoxes = this.state.openBoxes;
+      var closedBoxes = this.state.closedBoxes;
+      var m = (i - 1) / 2;
+      var n = j;
+
       lines[i][j] = turn;
-      var boxes = this.getBoxes(lines);
+      for (var x = 0; x < openLines.length; x++) {
+        if (openLines[x][0] === i && openLines[x][1] === j) {
+          openLines.splice(x, 1);
+          break;
+        }
+      };
+      selectedLines.push([i, j]);
+      boxes[m][n]++;
+
+      if (i % 2 !== 0 && m >= 1) {
+        boxes[m - 1][n]++;
+      } else if (n >= 1) {
+        boxes[m][n - 1]++;
+      }
+
+      // var closeCount = 0;
+      // for (var y = 0;, y < openBoxes.length; y++) {
+      //   var my = openBoxes[y][0];
+      //   var ny = openBoxes[y][1];
+      //   if ((i % 2 !== 0 && ny === n && (my === m || my === m - 1)) || (my === m && (ny === n || ny === n - 1))) {
+      //     var borderCount = 0;
+      //     linefor (var x = 0;, x < selectedLines.length; x++) {
+      //       if (line === [i - 1, j] || line === [i, j] || line === [i, j + 1] || line === [i + 1, j]) {
+      //         borderCount++;
+      //         if (borderCount === 4) {
+      //           closedBoxes.push([my, ny]);
+      //           openBoxes.splice(y, 1);
+      //           break;
+      //         }
+      //       }
+      //     }
+      //   }
+      // };
+
+
+
       this.setState({
         turn: -turn,
         lines: lines,
-        boxes: boxes
+        openLines: openLines,
+        boxes: boxes,
+        openBoxes: openBoxes
       })
     }
   },
