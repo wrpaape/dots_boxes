@@ -6,7 +6,8 @@ var Board = React.createClass({
     var turn = this.props.players[0];
     var rows = this.props.rows;
     var cols = this.props.cols;
-    var lines = [], openLines = [], boxes = [], boxesByScore = [[], [], [], [], []];
+    var lines = [], openLines = [], boxes = [];
+    var linesByPriority = [[], [], [], [], []], boxesByScore = [[], [], [], [], []];
     for (var i = 0; i < 2 * rows + 1; i++) {
       var numLines = cols;
       var m = (i - 1) / 2;
@@ -18,6 +19,7 @@ var Board = React.createClass({
       for (var j = 0; j < numLines; j++) {
         lines[i][j] = 0;
         openLines.push([i, j]);
+        linesByPriority[2].push([i, j]);
         if (i % 2 !== 0 && j < cols) {
           var n = j;
           boxes[m][n] = 0;
@@ -33,6 +35,7 @@ var Board = React.createClass({
       turn: turn,
       lines: lines,
       openLines: openLines,
+      linesByPriority: linesByPriority,
       boxes: boxes,
       boxesScore: $.extend(true, [], boxes),
       boxesByScore: boxesByScore,
@@ -124,16 +127,25 @@ var Board = React.createClass({
     if (lines[i][j] === 0) {
       var turn = this.state.turn;
       var openLines = this.state.openLines;
+      var boxesScore = this.state.boxesScore;
       var m = Math.floor(i / 2);
       var n = j;
+      var oldScores = [], newScores = [];
+
       this.removeCoords(openLines, i, j);
       lines[i][j] = turn;
-      this.updateBoxes(turn, i, j, m, n);
-      if (i % 2 === 0) {
-        this.updateBoxes(turn, i, j, m - 1, n);
-      } else {
-        this.updateBoxes(turn, i, j, m, n - 1);
+
+      for (var z = 0; z < 2: z++) {
+        z > 0 && i % 2 === 0 ? m-- : n--;
+        if (m >= 0 && m < boxesScore.length && n >= 0 && n < boxesScore[m].length) {
+          oldScores.push(boxesScore[m][n]);
+          this.updateBoxes(turn, m, n);
+          newScores.push(boxesScore[m][n]);
+        }
       }
+
+
+
 
       this.setState({
         turn: -turn,
@@ -149,7 +161,7 @@ var Board = React.createClass({
       }
     }
   },
-  updateBoxes: function(turn, i, j, m, n) {
+  updateBoxes: function(turn, m, n) {
     var boxes = this.state.boxes;
     if (m >= 0 && m < boxes.length && n >= 0 && n < boxes[m].length) {
       var boxesScore = this.state.boxesScore;
