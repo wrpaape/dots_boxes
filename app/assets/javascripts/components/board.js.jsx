@@ -21,7 +21,10 @@ var Board = React.createClass({
         if (i % 2 !== 0 && j < cols) {
           var n = j;
           boxes[m][n] = 0;
-          boxesByScore[0].push([m, n]);
+          boxesByScore[0].push({
+            coords: [m, n],
+            openLines: [[i - 1, j], [i, j], [i, j + 1], [i + 1, j]]
+          });
         }
       }
     }
@@ -33,7 +36,8 @@ var Board = React.createClass({
       boxes: boxes,
       boxesScore: $.extend(true, [], boxes),
       boxesByScore: boxesByScore,
-      boxesClosed: { player: 0, computer: 0 },
+      player: 0,
+      computer: 0,
       winner: '',
       shouldUpdate: true
     });
@@ -46,11 +50,15 @@ var Board = React.createClass({
     var openLines = this.state.openLines;
     if (openLines.length > 0) {
       if (turn === -1) {
-        var openLines = this.state.openLines;
-        var k = Math.floor(Math.random() * openLines.length);
-        var i = openLines[k][0];
-        var j = openLines[k][1];
-        this.selectLine(i, j);
+        var boxesByScore = this.state.boxesByScore;
+        var bestMove = this.getBestMove(openLines.slice(), boxesByScore[3].slice());
+
+        // console.log(nextMoves);
+
+        // var k = Math.floor(Math.random() * openLines.length);
+        // var i = openLines[k][0];
+        // var j = openLines[k][1];
+        this.selectLine(bestMove[0], bestMove[1], true);
       }
     } else if (turn !== 0) {
       this.renderGameover();
@@ -77,7 +85,7 @@ var Board = React.createClass({
           default:
             className += ' open';
         }
-        rowLines.push(<hr key={ 'line-' + i + '-' + j } className={ className } onClick={ this.selectLine.bind(this, i, j) } />);
+        rowLines.push(<hr key={ 'line-' + i + '-' + j } className={ className } onClick={ this.selectLine.bind(this, i, j, true) } />);
         if (alignment === 'vert' && j < lines[i].length - 1) {
           var m = (i - 1) / 2;
           var n = j;
@@ -111,7 +119,7 @@ var Board = React.createClass({
       </div>
     );
   },
-  selectLine: function(i, j) {
+  selectLine: function(i, j, shouldUpdate) {
     var lines = this.state.lines;
     if (lines[i][j] === 0) {
       var turn = this.state.turn;
@@ -120,17 +128,17 @@ var Board = React.createClass({
       var n = j;
       this.removeCoords(openLines, i, j);
       lines[i][j] = turn;
-      this.updateBoxes(turn, m, n);
+      this.updateBoxes(turn, i, j, m, n);
       if (i % 2 === 0) {
-        this.updateBoxes(turn, m - 1, n);
+        this.updateBoxes(turn, i, j, m - 1, n);
       } else {
-        this.updateBoxes(turn, m, n - 1);
+        this.updateBoxes(turn, i, j, m, n - 1);
       }
 
       this.setState({
         turn: -turn,
         lines: lines,
-        shouldUpdate: true
+        shouldUpdate: shouldUpdate
       });
     }
   },
@@ -141,39 +149,75 @@ var Board = React.createClass({
       }
     }
   },
-  updateBoxes: function(turn, m, n) {
+  updateBoxes: function(turn, i, j, m, n) {
     var boxes = this.state.boxes;
     if (m >= 0 && m < boxes.length && n >= 0 && n < boxes[m].length) {
       var boxesScore = this.state.boxesScore;
       var boxesByScore = this.state.boxesByScore;
-      var boxesClosed = this.state.boxesClosed;
+      var player = this.state.player;
+      var computer = this.state.computer;
       var score = boxesScore[m][n];
       if (score === 3) {
         boxes[m][n] = turn;
-        turn === 1 ? boxesClosed.player++ : boxesClosed.computer++;
+        turn === 1 ? player++ : computer++;
       }
-      this.removeCoords(boxesByScore[score], m, n);
-      boxesByScore[score + 1].push([m, n]);
+
+      var sameScore = boxesByScore[score];
+      for(var boxIndex = 0; boxIndex < sameScore.length; boxIndex++) {
+        var box = sameScore[boxIndex];
+        if (box.coords[0] === m && box.coords[1] === n) {
+          break;
+        }
+      }
+      this.removeCoords(box.openLines, i, j);
+      var openLines = box.openLines.slice();
+      sameScore.splice(boxIndex, 1);
+      boxesByScore[score + 1].push({
+        coords: [m, n],
+        openLines: openLines
+      });
       boxesScore[m][n]++;
 
       this.setState({
         boxes: boxes,
         boxesScore: boxesScore,
         boxesByScore: boxesByScore,
-        boxesClosed: boxesClosed,
+        player: player,
+        computer: computer,
         shouldUpdate: false
       });
     }
   },
+  getBestMove: function(openLines, boxes3) {
+    if (boxes3.length > 0) {
+
+    }
+    //  var nextMoves = [];
+    //   while (openLines.length > 1) {
+    //     var move = openLines.pop();
+    //     this.getBestMove(openLines.slice());
+    //     nextMoves.push({
+    //       move: move,
+    //       bestScore: this.getBestScore(move, copy)
+    //     });
+    //   }
+
+    //   nextMoves.sort(function(a, b) {
+    //     return b.bestScore - a.bestScore;
+    //   });
+    // while (openLines.length > 0) {
+
+    // }
+    return bestMove;
+  },
   renderGameover: function() {
-    var boxesClosed = this.state.boxesClosed;
-    var playerScore = boxesClosed.player;
-    var computerScore = boxesClosed.computer;
+    var player = this.state.player;
+    var computer = this.state.computer;
     var winner;
-    if (playerScore === computerScore) {
+    if (player === computer) {
       winner = 'tie';
     } else {
-      winner = playerScore > computerScore ? 'player' : 'computer';
+      winner = player > computer ? 'player' : 'computer';
     }
 
     this.setState({
