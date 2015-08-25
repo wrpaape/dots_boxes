@@ -43,8 +43,10 @@ var Board = React.createClass({
     return nextState.shouldUpdate;
   },
   componentDidUpdate: function() {
-    this.checkGameover();
     var turn = this.state.turn;
+    if (turn !== 0) {
+      this.checkGameover();
+    }
     if (turn === -1) {
       var openLines = this.state.openLines;
       var k = Math.floor(Math.random() * openLines.length);
@@ -118,9 +120,9 @@ var Board = React.createClass({
       this.removeCoords(openLines, i, j);
       lines[i][j] = turn;
       this.updateBoxes(turn, m, n);
-      if (i % 2 === 0 && m >= 1) {
+      if (i % 2 === 0) {
         this.updateBoxes(turn, m - 1, n);
-      } else if (i % 2 !== 0 && n >= 1) {
+      } else {
         this.updateBoxes(turn, m, n - 1);
       }
 
@@ -140,33 +142,30 @@ var Board = React.createClass({
   },
   updateBoxes: function(turn, m, n) {
     var boxes = this.state.boxes;
-    if (boxes[m] === undefined || boxes[m][n] === undefined) {
-      return;
-    }
-    var boxesScore = this.state.boxesScore;
-    var openBoxes = this.state.openBoxes;
-    var boxesByScore = this.state.boxesByScore;
-    var boxesClosed = this.state.boxesClosed;
-    var score = boxesScore[m][n];
-    if (score === 3) {
-      this.removeCoords(openBoxes, m, n);
-      boxes[m][n] = turn;
-      turn === 1 ? boxesClosed.player++ : boxesClosed.computer++;
-    }
-    this.removeCoords(boxesByScore[score], m, n);
-    console.log(m + ' ' + n);
-    console.log(score + 1);
-    boxesByScore[score + 1].push([m, n]);
-    boxesScore[m][n]++;
+    if (m >= 0 && m < boxes.length && n >= 0 && n < boxes[m].length) {
+      var boxesScore = this.state.boxesScore;
+      var openBoxes = this.state.openBoxes;
+      var boxesByScore = this.state.boxesByScore;
+      var boxesClosed = this.state.boxesClosed;
+      var score = boxesScore[m][n];
+      if (score === 3) {
+        this.removeCoords(openBoxes, m, n);
+        boxes[m][n] = turn;
+        turn === 1 ? boxesClosed.player++ : boxesClosed.computer++;
+      }
+      this.removeCoords(boxesByScore[score], m, n);
+      boxesByScore[score + 1].push([m, n]);
+      boxesScore[m][n]++;
 
-    this.setState({
-      boxes: boxes,
-      boxesScore: boxesScore,
-      openBoxes: openBoxes,
-      boxesByScore: boxesByScore,
-      boxesClosed: boxesClosed,
-      shouldUpdate: false
-    });
+      this.setState({
+        boxes: boxes,
+        boxesScore: boxesScore,
+        openBoxes: openBoxes,
+        boxesByScore: boxesByScore,
+        boxesClosed: boxesClosed,
+        shouldUpdate: false
+      });
+    }
   },
   checkGameover: function() {
     var openBoxes = this.state.openBoxes;
@@ -180,7 +179,7 @@ var Board = React.createClass({
       } else {
         winner = playerScore > computerScore ? 'player' : 'computer';
       }
-
+      var shoul
       this.setState({
         turn: 0,
         winner: winner,
