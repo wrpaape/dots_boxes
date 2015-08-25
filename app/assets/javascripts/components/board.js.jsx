@@ -6,13 +6,13 @@ var Board = React.createClass({
     var turn = this.props.players[0];
     var rows = this.props.rows;
     var cols = this.props.cols;
-    var lines = [], openLines = [], boxesOwner = [], boxesScore = [], openBoxes = [];
+    var lines = [], openLines = [], boxes = [], openBoxes = [];
     for (var i = 0; i < 2 * rows + 1; i++) {
       var numLines = cols;
       var m = (i - 1) / 2;
       if (i % 2 !== 0) {
         numLines++;
-        boxesScore[m] = new Array(cols);
+        boxes[m] = new Array(cols);
       }
       lines[i] = new Array(numLines);
       for (var j = 0; j < numLines; j++) {
@@ -20,19 +20,20 @@ var Board = React.createClass({
         openLines.push([i, j]);
         if (i % 2 !== 0 && j < cols) {
           var n = j;
-          boxesScore[m][n] = 0;
+          boxes[m][n] = 0;
           openBoxes.push([m, n]);
         }
       }
     }
+
     return({
       turn: turn,
       lines: lines,
       openLines: openLines,
-      boxesOwner: boxesScore,
-      boxesScore: boxesScore,
+      boxes: boxes,
+      boxesScore: $.extend(true, [], boxes),
       openBoxes: openBoxes,
-      boxesByScore: [openBoxes,[],[],[],[]],
+      boxesByScore: [$.extend(true, [], openBoxes), [], [] , [], []],
       boxesClosed: { player: 0, computer: 0 },
       winner: '',
       shouldUpdate: true
@@ -43,20 +44,19 @@ var Board = React.createClass({
   },
   componentDidUpdate: function() {
     this.checkGameover();
+    var turn = this.state.turn;
     if (turn === -1) {
-      var lines = this.state.lines;
-      var i, j;
-      do {
-        i = Math.floor(Math.random() * lines.length);
-        j = Math.floor(Math.random() * lines[i].length);
-      } while (lines[i][j] !== 0);
+      var openLines = this.state.openLines;
+      var k = Math.floor(Math.random() * openLines.length);
+      var i = openLines[k][0];
+      var j = openLines[k][1];
       this.selectLine(i, j);
     }
   },
   render: function() {
     var turn = this.state.turn;
     var lines = this.state.lines;
-    var boxesOwner = this.state.boxesOwner;
+    var boxes = this.state.boxes;
     var winner = this.state.winner;
     var rows = [];
     for (var i = 0; i < lines.length; i++) {
@@ -79,7 +79,7 @@ var Board = React.createClass({
           var m = (i - 1) / 2;
           var n = j;
           var className;
-          switch (boxesOwner[m][n]) {
+          switch (boxes[m][n]) {
             case 1:
               className = 'player';
               break;
@@ -106,25 +106,22 @@ var Board = React.createClass({
           { rows }
         </div>
       </div>
-    )
+    );
   },
   selectLine: function(i, j) {
     var lines = this.state.lines;
     if (lines[i][j] === 0) {
       var turn = this.state.turn;
       var openLines = this.state.openLines;
-      var m = (i - 1) / 2;
+      var m = Math.floor(i / 2);
       var n = j;
-      var score;
-
-      openLines = this.removeCoords.bind(this, openLines, i, j);
+      this.removeCoords(openLines, i, j);
       lines[i][j] = turn;
-
-      this.updateBoxes.bind(this, turn, m, n);
-      if (i % 2 !== 0 && m >= 1) {
-        this.updateBoxes.bind(this, turn, m - 1, n);
-      } else if (n >= 1) {
-        this.updateBoxes.bind(this, turn, m, n - 1);
+      this.updateBoxes(turn, m, n);
+      if (i % 2 === 0 && m >= 1) {
+        this.updateBoxes(turn, m - 1, n);
+      } else if (i % 2 !== 0 && n >= 1) {
+        this.updateBoxes(turn, m, n - 1);
       }
 
       this.setState({
@@ -139,26 +136,31 @@ var Board = React.createClass({
       if (arr[k][0] === x && arr[k][1] === y) {
         return arr.splice(k, 1);
       }
-    };
+    }
   },
   updateBoxes: function(turn, m, n) {
-    var boxesOwner = this.state.boxesOwner;
+    var boxes = this.state.boxes;
+    if (boxes[m] === undefined || boxes[m][n] === undefined) {
+      return;
+    }
     var boxesScore = this.state.boxesScore;
     var openBoxes = this.state.openBoxes;
     var boxesByScore = this.state.boxesByScore;
     var boxesClosed = this.state.boxesClosed;
     var score = boxesScore[m][n];
     if (score === 3) {
-      openBoxes = this.removeCoords.bind(this, openBoxes, m, n);
-      boxesOwner = turn;
+      this.removeCoords(openBoxes, m, n);
+      boxes[m][n] = turn;
       turn === 1 ? boxesClosed.player++ : boxesClosed.computer++;
     }
-    boxesByScore[score] = this.removeCoords.bind(this, boxesByScore[score], m, n);
+    this.removeCoords(boxesByScore[score], m, n);
+    console.log(m + ' ' + n);
+    console.log(score + 1);
     boxesByScore[score + 1].push([m, n]);
     boxesScore[m][n]++;
 
     this.setState({
-      boxesOwner: boxesOwner,
+      boxes: boxes,
       boxesScore: boxesScore,
       openBoxes: openBoxes,
       boxesByScore: boxesByScore,
@@ -183,7 +185,7 @@ var Board = React.createClass({
         turn: 0,
         winner: winner,
         shouldUpdate: true
-      })
+      });
     }
   }
 });
