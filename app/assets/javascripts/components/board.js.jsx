@@ -6,13 +6,13 @@ var Board = React.createClass({
     var turn = this.props.players[0];
     var rows = this.props.rows;
     var cols = this.props.cols;
-    var lines = [], openLines = [], boxes = [], openBoxes = [];
+    var lines = [], openLines = [], boxesOwner = [], boxesScore = [], openBoxes = [];
     for (var i = 0; i < 2 * rows + 1; i++) {
       var numLines = cols;
       var m = (i - 1) / 2;
       if (i % 2 !== 0) {
         numLines++;
-        boxes[m] = new Array(cols);
+        boxesScore[m] = new Array(cols);
       }
       lines[i] = new Array(numLines);
       for (var j = 0; j < numLines; j++) {
@@ -20,7 +20,7 @@ var Board = React.createClass({
         openLines.push([i, j]);
         if (i % 2 !== 0 && j < cols) {
           var n = j;
-          boxes[m][n] = 0;
+          boxesScore[m][n] = 0;
           openBoxes.push([m, n]);
         }
       }
@@ -29,18 +29,20 @@ var Board = React.createClass({
       turn: turn,
       lines: lines,
       openLines: openLines,
-      selectedLines: [],
-      boxes: boxes,
+      boxesOwner: boxesScore,
+      boxesScore: boxesScore,
       openBoxes: openBoxes,
-      closedBoxes: [],
-      winner: ''
+      boxesByScore: [openBoxes,[],[],[],[]],
+      boxesClosed: { player: 0, computer: 0 },
+      winner: '',
+      shouldUpdate: true
     });
   },
+  shouldComponentUpdate: function(nextProps, nextState) {
+    return nextState.shouldUpdate;
+  },
   componentDidUpdate: function() {
-    var turn = this.state.turn;
-    if (turn !== 0) {
-      this.checkGameover();
-    }
+    this.checkGameover();
     if (turn === -1) {
       var lines = this.state.lines;
       var i, j;
@@ -54,7 +56,7 @@ var Board = React.createClass({
   render: function() {
     var turn = this.state.turn;
     var lines = this.state.lines;
-    var boxes = this.state.boxes;
+    var boxesOwner = this.state.boxesOwner;
     var winner = this.state.winner;
     var rows = [];
     for (var i = 0; i < lines.length; i++) {
@@ -77,7 +79,7 @@ var Board = React.createClass({
           var m = (i - 1) / 2;
           var n = j;
           var className;
-          switch (boxes[m][n]) {
+          switch (boxesOwner[m][n]) {
             case 1:
               className = 'player';
               break;
@@ -94,6 +96,7 @@ var Board = React.createClass({
     }
     var gameover = turn === 0 ? ' gameover' : '';
     var gameoverText = winner === 'tie' ? 'tie game' : winner + ' wins';
+
     return(
       <div className='board' >
         <div className={ 'gameover-text' + gameover }>
@@ -105,106 +108,81 @@ var Board = React.createClass({
       </div>
     )
   },
-  // updateBoxes: function(lines) {
-  //   var rows = this.props.rows;
-  //   var cols = this.props.cols;
-  //   var boxes = [];
-  //   for (var m = 0; m < rows; m++) {
-  //     var i = 2 * m + 1;
-  //     boxes[m] = new Array(cols);
-  //     for (var n = 0; n < cols; n++) {
-  //       var j = n;
-  //       boxes[m][n] = lines[i - 1][j] + lines[i][j] + lines[i][j + 1] + lines[i + 1][j];
-  //     }
-  //   }
-  //   return boxes;
-  // },
   selectLine: function(i, j) {
     var lines = this.state.lines;
     if (lines[i][j] === 0) {
       var turn = this.state.turn;
       var openLines = this.state.openLines;
-      var selectedLines = this.state.selectedLines;
-      var boxes = this.state.boxes;
-      var openBoxes = this.state.openBoxes;
-      var closedBoxes = this.state.closedBoxes;
       var m = (i - 1) / 2;
       var n = j;
+      var score;
 
+      openLines = this.removeCoords.bind(this, openLines, i, j);
       lines[i][j] = turn;
-      for (var x = 0; x < openLines.length; x++) {
-        if (openLines[x][0] === i && openLines[x][1] === j) {
-          openLines.splice(x, 1);
-          break;
-        }
-      };
-      selectedLines.push([i, j]);
-      boxes[m][n]++;
 
+      this.updateBoxes.bind(this, turn, m, n);
       if (i % 2 !== 0 && m >= 1) {
-        boxes[m - 1][n]++;
+        this.updateBoxes.bind(this, turn, m - 1, n);
       } else if (n >= 1) {
-        boxes[m][n - 1]++;
+        this.updateBoxes.bind(this, turn, m, n - 1);
       }
-
-      // var closeCount = 0;
-      // for (var y = 0;, y < openBoxes.length; y++) {
-      //   var my = openBoxes[y][0];
-      //   var ny = openBoxes[y][1];
-      //   if ((i % 2 !== 0 && ny === n && (my === m || my === m - 1)) || (my === m && (ny === n || ny === n - 1))) {
-      //     var borderCount = 0;
-      //     linefor (var x = 0;, x < selectedLines.length; x++) {
-      //       if (line === [i - 1, j] || line === [i, j] || line === [i, j + 1] || line === [i + 1, j]) {
-      //         borderCount++;
-      //         if (borderCount === 4) {
-      //           closedBoxes.push([my, ny]);
-      //           openBoxes.splice(y, 1);
-      //           break;
-      //         }
-      //       }
-      //     }
-      //   }
-      // };
-
-
 
       this.setState({
         turn: -turn,
         lines: lines,
-        openLines: openLines,
-        boxes: boxes,
-        openBoxes: openBoxes
-      })
+        shouldUpdate: true
+      });
     }
   },
-  checkGameover: function() {
-    var lines = this.state.lines;
-    var flatLines = lines.reduce(function(a, b) {
-      return a.concat(b);
-    });
-    if (flatLines.indexOf(0) === -1) {
-      var boxes = this.state.boxes;
-      var numPlayer = 0, numComputer = 0;
-      for (var m = 0; m < boxes.length; m++) {
-        for (var n = 0; n < boxes[m].length; n++) {
-          switch (boxes[m][n]) {
-            case 4:
-              numPlayer++;
-              break;
-            case -4:
-              numComputer++;
-          }
-        }
+  removeCoords: function(arr, x, y) {
+    for (var k = 0; k < arr.length; k++) {
+      if (arr[k][0] === x && arr[k][1] === y) {
+        return arr.splice(k, 1);
       }
+    };
+  },
+  updateBoxes: function(turn, m, n) {
+    var boxesOwner = this.state.boxesOwner;
+    var boxesScore = this.state.boxesScore;
+    var openBoxes = this.state.openBoxes;
+    var boxesByScore = this.state.boxesByScore;
+    var boxesClosed = this.state.boxesClosed;
+    var score = boxesScore[m][n];
+    if (score === 3) {
+      openBoxes = this.removeCoords.bind(this, openBoxes, m, n);
+      boxesOwner = turn;
+      turn === 1 ? boxesClosed.player++ : boxesClosed.computer++;
+    }
+    boxesByScore[score] = this.removeCoords.bind(this, boxesByScore[score], m, n);
+    boxesByScore[score + 1].push([m, n]);
+    boxesScore[m][n]++;
+
+    this.setState({
+      boxesOwner: boxesOwner,
+      boxesScore: boxesScore,
+      openBoxes: openBoxes,
+      boxesByScore: boxesByScore,
+      boxesClosed: boxesClosed,
+      shouldUpdate: false
+    });
+  },
+  checkGameover: function() {
+    var openBoxes = this.state.openBoxes;
+    if (openBoxes.length === 0) {
+      var boxesClosed = this.state.boxesClosed;
+      var playerScore = boxesClosed.player;
+      var computerScore = boxesClosed.computer;
       var winner;
-      if (numPlayer === numComputer) {
+      if (playerScore === computerScore) {
         winner = 'tie';
       } else {
-        winner = numPlayer > numComputer ? 'player' : 'computer';
+        winner = playerScore > computerScore ? 'player' : 'computer';
       }
+
       this.setState({
         turn: 0,
-        winner: winner
+        winner: winner,
+        shouldUpdate: true
       })
     }
   }
