@@ -37,28 +37,15 @@ var Board = React.createClass({
       boxes: boxes,
       boxesScore: $.extend(true, [], boxes),
       boxesByScore: boxesByScore,
-      player: 0,
-      computer: 0,
-      winner: '',
-      shouldUpdate: true
+      winner: ''
     });
-  },
-  shouldComponentUpdate: function(nextProps, nextState) {
-    return nextState.shouldUpdate;
   },
   componentDidUpdate: function() {
     var turn = this.state.turn;
     var openLines = this.state.openLines;
     if (openLines.length > 0) {
       if (turn === -1) {
-        var boxesByScore = this.state.boxesByScore;
-        var bestMove = this.getBestMove(openLines.slice(), boxesByScore[3].slice());
-
-        // console.log(nextMoves);
-
-        // var k = Math.floor(Math.random() * openLines.length);
-        // var i = openLines[k][0];
-        // var j = openLines[k][1];
+        var bestMove = this.getBestMove();
         this.selectLine(bestMove[0], bestMove[1], true);
       }
     } else if (turn !== 0) {
@@ -120,41 +107,31 @@ var Board = React.createClass({
       </div>
     );
   },
-  selectLine: function(i, j, shouldUpdate) {
+  selectLine: function(i, j) {
     var lines = this.state.lines;
     if (lines[i][j] === 0) {
       var turn = this.state.turn;
       var openLines = this.state.openLines;
       var linesByPriority = this.state.linesByPriority;
       var boxesScore = this.state.boxesScore;
-      var m = Math.floor(i / 2);
-      var n = j;
-      var num2s = 0, num3s = 0;
-
+      var oldBoxesScore = boxesScore.map(function(boxes) {
+        return boxes.slice();
+      });
       this.removeCoords(openLines, i, j);
       lines[i][j] = turn;
-      for (var z = 0; z < 2; z++) {
-        if (z > 0) {
-          i % 2 === 0 ? m-- : n--;
-        }
-        if (m >= 0 && m < boxesScore.length && n >= 0 && n < boxesScore[m].length) {
-          if (boxesScore[m][n] > 1) {
-            boxesScore[m][n] == 2 ? num2s++ : num3s++;
-          }
-          oldScores.push(boxesScore[m][n]);
-          this.updateBoxes(turn, boxesScore, m, n);
-        }
-      }
+      var neighbors = this.getNeighbors(boxesScore, i, j);
 
-      var oldPriority = this.getOldPriority(num2s, num3s);
-
+      neighbors.forEach(function(box) {
+        this.updateBoxes(turn, boxesScore, box[0], box[1]);
+      }.bind(this));
+      var bumpLines = this.getBumpLines(neighbors, openLines);
+      this.updatePriorities(linesByPriority, bumpLines, [i, j], oldBoxesScore, boxesScore);
 
       this.setState({
         turn: -turn,
         lines: lines,
         openLines: openLines,
-        linesByPriority: linesByPriority,
-        shouldUpdate: shouldUpdate
+        linesByPriority: linesByPriority
       });
     }
   },
@@ -165,17 +142,37 @@ var Board = React.createClass({
       }
     }
   },
+  getNeighbors: function(boxesScore, i, j) {
+    var m = Math.floor(i / 2);
+    var n = j;
+    var neighbors = [];
+    for (var z = 0; z < 2; z++) {
+      if (z > 0) {
+        i % 2 === 0 ? m-- : n--;
+      }
+      if (m >= 0 && m < boxesScore.length && n >= 0 && n < boxesScore[m].length) {
+        neighbors.push([m, n]);
+      }
+    }
+    return neighbors;
+  },
+  getBumpLines: function(neighbors, openLines) {
+    var allBorders = [];
+    neighbors.forEach(function(box) {
+      var i = 2 * box[0] + 1;
+      var j = box[1];
+      allBorders.concat([[i - 1, j], [i, j], [i, j + 1], [i + 1, j]]);
+    });
+
+    return allBorders && openLines;
+  },
   updateBoxes: function(turn, boxesScore, m, n) {
     var boxes = this.state.boxes;
     var boxesByScore = this.state.boxesByScore;
-    var player = this.state.player;
-    var computer = this.state.computer;
     var score = boxesScore[m][n];
     if (score === 3) {
       boxes[m][n] = turn;
-      turn === 1 ? player++ : computer++;
     }
-
     this.removeCoords(boxesByScore[score], m, n);
     boxesByScore[score + 1].push([m, n]);
     boxesScore[m][n]++;
@@ -184,65 +181,86 @@ var Board = React.createClass({
       boxes: boxes,
       boxesScore: boxesScore,
       boxesByScore: boxesByScore,
-      player: player,
-      computer: computer,
-      shouldUpdate: false
     });
   },
-  getOldPriority: function(num2s, num3s) {
-    var oldPriority;
-    if (num2s === 0 && num3s === 2) {
-      oldPriority = 0;
-    } else if (num2s === 0 && num3s === 1) {
-      oldPriority = 1;
-    } else if (num2s === 1 && num3s === 1) {
-      oldPriority = 2;
-    } else if (num2s === 0 && num3s === 0) {
-      oldPriority = 3;
-    } else if (num2s === 1 && num3s === 0) {
-      oldPriority = 4;
-    } else if (num2s === 2 && num3s === 0) {
-      oldPriority = 5;
-    }
+  updatePriorities: function(linesByPriority, bumpLines, dropLine, oldBoxesScore, boxesScore) {
+    var i = dropLine[0];
+    var j = dropLine[1];
+    var neighbors = this.getNeighbors(boxesScore, i, j);
+    var oldNums = this.getNums(neighbors, oldBoxesScore);
+    var oldPriority = this.getPriority(oldNums[0], oldNums[1]);
+    this.removeCoords(linesByPriority[oldPriority], i, j);
 
-    return oldPriority;
+    bumpLines.forEach(function(line) {
+      var i = line[0];
+      var j = line[1];
+      var neighbors = this.getNeighbors(boxesScore, i, j);
+      var oldNums = this.getNums(neighbors, oldBoxesScore);
+      var oldPriority = this.getPriority(oldNums[0], oldNums[1]);
+      var nums = this.getNums(neighbors, boxesScore);
+      var priority = this.getPriority(nums[0], nums[1]);
+      this.removeCoords(linesByPriority[oldPriority], i, j);
+      linesByPriority[priority].push([i, j]);
+    }.bind(this));
+
+    return linesByPriority;
   },
-  getBestMove: function(openLines, boxes3) {
-    if (boxes3.length > 0) {
+  getNums: function(neighbors, boxesScore) {
+    var num2s = 0, num3s = 0;
+    neighbors.forEach(function(box) {
+      var m = box[0];
+      var n = box[1];
+      var score = boxesScore[m][n];
+      if (score > 1) {
+        score === 2 ? num2s++ : num3s++;
+      }
+    });
 
+    return [num2s, num3s];
+  },
+  getPriority: function(num2s, num3s) {
+    if (num2s === 0 && num3s === 2) {
+      return 0;
+    } else if (num2s === 0 && num3s === 1) {
+      return 1;
+    } else if (num2s === 1 && num3s === 1) {
+      return 2;
+    } else if (num2s === 0 && num3s === 0) {
+      return 3;
+    } else if (num2s === 1 && num3s === 0) {
+      return 4;
+    } else if (num2s === 2 && num3s === 0) {
+      return 5;
     }
-    //  var nextMoves = [];
-    //   while (openLines.length > 1) {
-    //     var move = openLines.pop();
-    //     this.getBestMove(openLines.slice());
-    //     nextMoves.push({
-    //       move: move,
-    //       bestScore: this.getBestScore(move, copy)
-    //     });
-    //   }
-
-    //   nextMoves.sort(function(a, b) {
-    //     return b.bestScore - a.bestScore;
-    //   });
-    // while (openLines.length > 0) {
-
-    // }
-    return bestMove;
+  },
+  getBestMove: function() {
+    var linesByPriority = this.state.linesByPriority;
+    for (var priority = 0; priority < 6; priority++) {
+      var moves = linesByPriority[priority];
+      if (moves.length > 0) {
+        return moves[0];
+      }
+    }
   },
   renderGameover: function() {
-    var player = this.state.player;
-    var computer = this.state.computer;
+    var boxes = this.state.boxes;
+    var sum = 0;
+    boxes.forEach(function(row) {
+      row.forEach(function(box) {
+        sum += box;
+      })
+    });
+
     var winner;
-    if (player === computer) {
+    if (sum === 0) {
       winner = 'tie';
     } else {
-      winner = player > computer ? 'player' : 'computer';
+      winner = sum > 0 ? 'player' : 'computer';
     }
 
     this.setState({
       turn: 0,
-      winner: winner,
-      shouldUpdate: true
+      winner: winner
     });
   }
 });
