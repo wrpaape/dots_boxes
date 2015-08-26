@@ -7,7 +7,8 @@ var Board = React.createClass({
     var rows = this.props.rows;
     var cols = this.props.cols;
     var lines = [], openLines = [], boxes = [];
-    var linesByPriority = [[], [], [], [], []], boxesByScore = [[], [], [], [], []];
+    var linesByPriority = [[], [], [], [], [], []];
+    var boxesByScore = [[], [], [], [], []];
     for (var i = 0; i < 2 * rows + 1; i++) {
       var numLines = cols;
       var m = (i - 1) / 2;
@@ -19,14 +20,11 @@ var Board = React.createClass({
       for (var j = 0; j < numLines; j++) {
         lines[i][j] = 0;
         openLines.push([i, j]);
-        linesByPriority[2].push([i, j]);
+        linesByPriority[3].push([i, j]);
         if (i % 2 !== 0 && j < cols) {
           var n = j;
           boxes[m][n] = 0;
-          boxesByScore[0].push({
-            coords: [m, n],
-            openLines: [[i - 1, j], [i, j], [i, j + 1], [i + 1, j]]
-          });
+          boxesByScore[0].push([m, n]);
         }
       }
     }
@@ -127,29 +125,35 @@ var Board = React.createClass({
     if (lines[i][j] === 0) {
       var turn = this.state.turn;
       var openLines = this.state.openLines;
+      var linesByPriority = this.state.linesByPriority;
       var boxesScore = this.state.boxesScore;
       var m = Math.floor(i / 2);
       var n = j;
-      var oldScores = [], newScores = [];
+      var num2s = 0, num3s = 0;
 
       this.removeCoords(openLines, i, j);
       lines[i][j] = turn;
-
-      for (var z = 0; z < 2: z++) {
-        z > 0 && i % 2 === 0 ? m-- : n--;
+      for (var z = 0; z < 2; z++) {
+        if (z > 0) {
+          i % 2 === 0 ? m-- : n--;
+        }
         if (m >= 0 && m < boxesScore.length && n >= 0 && n < boxesScore[m].length) {
+          if (boxesScore[m][n] > 1) {
+            boxesScore[m][n] == 2 ? num2s++ : num3s++;
+          }
           oldScores.push(boxesScore[m][n]);
-          this.updateBoxes(turn, m, n);
-          newScores.push(boxesScore[m][n]);
+          this.updateBoxes(turn, boxesScore, m, n);
         }
       }
 
-
+      var oldPriority = this.getOldPriority(num2s, num3s);
 
 
       this.setState({
         turn: -turn,
         lines: lines,
+        openLines: openLines,
+        linesByPriority: linesByPriority,
         shouldUpdate: shouldUpdate
       });
     }
@@ -161,44 +165,47 @@ var Board = React.createClass({
       }
     }
   },
-  updateBoxes: function(turn, m, n) {
+  updateBoxes: function(turn, boxesScore, m, n) {
     var boxes = this.state.boxes;
-    if (m >= 0 && m < boxes.length && n >= 0 && n < boxes[m].length) {
-      var boxesScore = this.state.boxesScore;
-      var boxesByScore = this.state.boxesByScore;
-      var player = this.state.player;
-      var computer = this.state.computer;
-      var score = boxesScore[m][n];
-      if (score === 3) {
-        boxes[m][n] = turn;
-        turn === 1 ? player++ : computer++;
-      }
-
-      var sameScore = boxesByScore[score];
-      for(var boxIndex = 0; boxIndex < sameScore.length; boxIndex++) {
-        var box = sameScore[boxIndex];
-        if (box.coords[0] === m && box.coords[1] === n) {
-          break;
-        }
-      }
-      this.removeCoords(box.openLines, i, j);
-      var openLines = box.openLines.slice();
-      sameScore.splice(boxIndex, 1);
-      boxesByScore[score + 1].push({
-        coords: [m, n],
-        openLines: openLines
-      });
-      boxesScore[m][n]++;
-
-      this.setState({
-        boxes: boxes,
-        boxesScore: boxesScore,
-        boxesByScore: boxesByScore,
-        player: player,
-        computer: computer,
-        shouldUpdate: false
-      });
+    var boxesByScore = this.state.boxesByScore;
+    var player = this.state.player;
+    var computer = this.state.computer;
+    var score = boxesScore[m][n];
+    if (score === 3) {
+      boxes[m][n] = turn;
+      turn === 1 ? player++ : computer++;
     }
+
+    this.removeCoords(boxesByScore[score], m, n);
+    boxesByScore[score + 1].push([m, n]);
+    boxesScore[m][n]++;
+
+    this.setState({
+      boxes: boxes,
+      boxesScore: boxesScore,
+      boxesByScore: boxesByScore,
+      player: player,
+      computer: computer,
+      shouldUpdate: false
+    });
+  },
+  getOldPriority: function(num2s, num3s) {
+    var oldPriority;
+    if (num2s === 0 && num3s === 2) {
+      oldPriority = 0;
+    } else if (num2s === 0 && num3s === 1) {
+      oldPriority = 1;
+    } else if (num2s === 1 && num3s === 1) {
+      oldPriority = 2;
+    } else if (num2s === 0 && num3s === 0) {
+      oldPriority = 3;
+    } else if (num2s === 1 && num3s === 0) {
+      oldPriority = 4;
+    } else if (num2s === 2 && num3s === 0) {
+      oldPriority = 5;
+    }
+
+    return oldPriority;
   },
   getBestMove: function(openLines, boxes3) {
     if (boxes3.length > 0) {
