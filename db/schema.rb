@@ -11,20 +11,48 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150826164200) do
+ActiveRecord::Schema.define(version: 20150826181036) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "computers", force: :cascade do |t|
+    t.integer "min"
+    t.integer "max"
+    t.boolean "easy"
+    t.boolean "medium"
+    t.boolean "hard"
+    t.integer "spec_id"
+  end
+
+  create_table "dimensions", force: :cascade do |t|
+    t.string  "type"
+    t.integer "min"
+    t.integer "max"
+    t.integer "layout_id"
+  end
+
   create_table "games", force: :cascade do |t|
-    t.string   "title"
-    t.text     "rules"
-    t.integer  "min_players",  limit: 2
-    t.integer  "max_players",  limit: 2
-    t.string   "difficulties",                        array: true
-    t.string   "component"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.string "title"
+    t.text   "rules"
+    t.string "component"
+  end
+
+  create_table "layouts", force: :cascade do |t|
+    t.string  "type"
+    t.integer "spec_id"
+  end
+
+  create_table "players", force: :cascade do |t|
+    t.integer "min"
+    t.integer "max"
+    t.integer "spec_id"
+  end
+
+  create_table "specs", force: :cascade do |t|
+    t.integer "min"
+    t.integer "max"
+    t.integer "game_id"
   end
 
 end

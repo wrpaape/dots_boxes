@@ -1,21 +1,62 @@
-# max_int = 32767
-max_int = 10
+def self.assign_children
+  parentModel = keys.first.constantize
+  children = delete(:children)
+  parent = parentModel.create(values.first)
+  return unless children
+  children.each do |key, value|
+    child = value.assign_children
+    foreign_key = child.column_names.grep(/_id/).first
+    child.update({ foreign_key=> parent.id })
+  end
+end
 
 games = [
   {
-    title: "Dots and Boxes",
-    rules:
-"""
-Starting with an empty grid of dots, players take turns, adding a single horizontal or vertical line between two unjoined adjacent dots.
-A player who completes the fourth side of a 1×1 box earns one point and takes another turn.
-The game ends when no more lines can be placed.
-The winner of the game is the player with the most points.
-"""[1..-1].gsub!("\n", "  "),
-    size: { rows: [1, max_int], cols: [1, max_int] }.to_json,
-    players: [2, max_int],
-    difficulties: ["easy", "medium", "hard"],
-    component: "DotsBoxes"
+    "Game"=> {
+      title: "Dots and Boxes",
+      rules:
+  """
+  Starting with an empty grid of dots, players take turns, adding a single horizontal or vertical line between two unjoined adjacent dots.
+  A player who completes the fourth side of a 1×1 box earns one point and takes another turn.
+  The game ends when no more lines can be placed.
+  The winner of the game is the player with the most points.
+  """[1..-1].gsub!("\n", "  "),
+      component: "DotsBoxes",
+      children: {
+        "Spec"=> {
+          min: 2,
+          max: 20,
+          children: {
+            "Player"=> {
+              min: 0,
+              max: 10
+            },
+            "Computer"=> {
+              min: 0,
+              max: 10,
+              easy: true,
+              medium: true,
+              hard: true
+            },
+            "Grid"=> {
+              children: {
+                "Row"=> {
+                  min: 1,
+                  max: 10
+                },
+                "Col"=> {
+                  min: 1,
+                  max: 10
+                },
+              }
+            }
+          }
+        }
+      }
+    }
   }
 ]
 
-games.each { |game| Game.create(game) }
+games.each do |game|
+  game.assign_children
+end
