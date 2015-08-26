@@ -1,9 +1,5 @@
 class GamesController < ApplicationController
   def index
-    @games = Game.all
-  end
-
-  def show
-    @game = Game.find(params[:id]);
+    @games =  Game.include_all_as_json
   end
 end
