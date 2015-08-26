@@ -72,6 +72,4 @@ games = [
   }
 ]
 
-games.each do |game|
-  game.assign_children
-end
+games.each(&:assign_children)
