@@ -3,11 +3,12 @@
 
 var DotsBoxes = React.createClass({
   getInitialState: function() {
-    var size = this.props.size;
-    var rows = size[0];
-    var cols = size[1];
-    var players = this.props.players;
-    var turn = this.props.players[0];
+    var spec = this.props.spec;
+    var dimensions = spec.layout.dimensions;
+    var rows = dimensions[0].max;
+    var cols = dimensions[1].max;
+    // var players = this.props.players;
+    var turn = 1;
     var lines = [], openLines = [], boxes = [];
     var linesByPriority = [[], [], [], [], [], []];
     var boxesByScore = [[], [], [], [], []];

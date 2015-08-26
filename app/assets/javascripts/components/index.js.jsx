@@ -7,13 +7,14 @@ var Index = React.createClass({
   // },
   render: function() {
     var games = this.props.games;
-    var index = games.map(function(game) {
-
-      return <
+    var index = games.map(function(game, i) {
+      return <Show key={ i } game={ game } />;
     });
 
     return(
-
+      <div>
+        { index }
+      </div>
     );
   }
 });
