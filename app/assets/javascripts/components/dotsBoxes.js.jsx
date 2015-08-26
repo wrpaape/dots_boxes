@@ -1,11 +1,13 @@
 /* globals React */
 'use strict';
 
-var Board = React.createClass({
+var DotsBoxes = React.createClass({
   getInitialState: function() {
+    var size = this.props.size;
+    var rows = size[0];
+    var cols = size[1];
+    var players = this.props.players;
     var turn = this.props.players[0];
-    var rows = this.props.rows;
-    var cols = this.props.cols;
     var lines = [], openLines = [], boxes = [];
     var linesByPriority = [[], [], [], [], [], []];
     var boxesByScore = [[], [], [], [], []];
