@@ -58,4 +58,3 @@ end
 gem 'bullet', group: :development
 gem 'react-rails'
 gem 'bcrypt'
-gem 'active_model_serializers'
