@@ -16,7 +16,7 @@ class CreateSpecTables < ActiveRecord::Migration
       t.integer :min
       t.integer :max
       t.boolean :easy
-      t.boolean :med
+      t.boolean :medium
       t.boolean :hard
       t.belongs_to :spec
     end

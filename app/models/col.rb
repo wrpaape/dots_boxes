@@ -1,2 +1,0 @@
-class Col < Dimension
-end

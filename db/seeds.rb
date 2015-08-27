@@ -42,7 +42,7 @@ games = [
                   min: 0,
                   max: 10,
                   easy: true,
-                  med: true,
+                  medium: true,
                   hard: true
                 }
               },
@@ -56,7 +56,7 @@ games = [
                       }
                     },
                     {
-                      "Col" => {
+                      "Column" => {
                         min: 1,
                         max: 10
                       },

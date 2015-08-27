@@ -6,15 +6,10 @@ class Game < ActiveRecord::Base
       include: {
         spec: {
           include: [
-            :players,
-            :computers,
+            :player,
+            :computer,
             layout: {
-              include: {
-                dimensions: {
-                  root: true
-                }
-              },
-              methods: :type
+              methods: [:type, :dimensions]
             }
           ]
         }
