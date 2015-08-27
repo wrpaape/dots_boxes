@@ -7,7 +7,6 @@ var DotsBoxes = React.createClass({
     var dimensions = spec.layout.dimensions;
     var rows = dimensions[0].max;
     var cols = dimensions[1].max;
-    // var players = this.props.players;
     var turn = 1;
     var lines = [], openLines = [], boxes = [];
     var linesByPriority = [[], [], [], [], [], []];

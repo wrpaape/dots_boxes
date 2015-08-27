@@ -42,7 +42,7 @@ games = [
                   min: 0,
                   max: 10,
                   easy: true,
-                  medium: true,
+                  med: true,
                   hard: true
                 }
               },

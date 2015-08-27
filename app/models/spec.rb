@@ -1,5 +1,5 @@
 class Spec < ActiveRecord::Base
-  has_many :players
-  has_many :computers
+  has_one :player
+  has_one :computer
   has_one :layout
 end
