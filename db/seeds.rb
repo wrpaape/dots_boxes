@@ -36,6 +36,7 @@ The winner of the game is the player with the most points.
                   default: 1,
                   min: 0,
                   max: 10,
+                  score: 0
                 }
               },
               {
@@ -43,6 +44,7 @@ The winner of the game is the player with the most points.
                   default: 1,
                   min: 0,
                   max: 10,
+                  score: 0,
                   levels: 3
                 }
               },

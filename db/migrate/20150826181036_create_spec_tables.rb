@@ -10,6 +10,7 @@ class CreateSpecTables < ActiveRecord::Migration
       t.integer :default
       t.integer :min
       t.integer :max
+      t.integer :score
       t.integer :levels
       t.belongs_to :spec
     end

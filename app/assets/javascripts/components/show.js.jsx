@@ -6,16 +6,16 @@ var Show = React.createClass({
     var game = this.props.game;
     var player = game.spec.player;
     var computer = game.spec.computer;
-    var players = this.getDefaultPlayers(player.default, computer.default);
-    var turns = Object.keys(players).map(function(name) {
-      var turn = {};
-      turn[name] = players[name];
-      return turn;
+    var players = this.getDefaultPlayers(player.num, player.score, computer.num, computer.score);
+    var turns = [];
+    Object.keys(players).forEach(function(name) {
+      turns[players[name].turn] = name;
     });
+
     return({
       buttonSelected: '',
       players: players,
-      turns:
+      turns: turns
     });
   },
   render: function() {
@@ -27,10 +27,10 @@ var Show = React.createClass({
     var players = this.state.players;
     var undefinedCallBack = function() { return; };
     var buttons = {
-      'rules': { callBack: { callBack: undefinedCallBack, args: [] }, rules: game.rules },
-      'players': { callBack: { callback: undefinedCallBack, args: [] }, player: game.spec.player, computer: game.spec.computer },
-      'play': { callBack: { callback: startGame, args: [game.id, ] } },
-      'back': { callBack: { goBack } }
+      'rules': { callBack: { func: undefinedCallBack, args: [] }, rules: game.rules },
+      'players': { callBack: { func: undefinedCallBack, args: [] }, player: game.spec.player, computer: game.spec.computer },
+      'play': { callBack: { func: startGame, args: [game.id, players] } },
+      'back': { callBack: { func: goBack, args: [] } }
     };
 
     var allButtons = Object.keys(buttons).map(function(button) {
@@ -55,24 +55,72 @@ var Show = React.createClass({
       </div>
     );
   },
-  getDefaultPlayers: function(numPlayers, numComputers) {
+  getDefaultPlayers: function(numPlayers, scorePlayers, numComputers, scoreComputers) {
     var numBigger = numPlayers > numComputers ? numPlayers : numComputers;
+    var turn = 0;
     var players = {};
     for(var i = 1; i <= numBigger; i++) {
       if (i <= numPlayers) {
-        players['player' + i] = i;
+        players['player' + i] = {
+          token: i,
+          turn: turn++,
+          score: scorePlayers
+        }
       }
       if (i <= numComputers) {
-        players['computer' + i] = -i;
+        players['computer' + i] = {
+          token: -i,
+          turn: turn++,
+          score: scoreComputers
+        }
       }
     }
 
     return players;
   },
-  selectButton: function(button, callBack) {
-    this.setState({
-      buttonSelected: button
+  addPlayer: function(name) {
+    var game = this.props.game;
+    var score = game.spec.player.score;
+    var players = this.state.players;
+    var turns = this.state.turns;
+    var newToken = 0;
+    var tokens = players.map(function(player) {
+      return player.token;
     });
-    callBack.apply(this, args);
+    var token = tokens.sort().pop() + 1;
+    var player = {
+      name: name,
+      token: token,
+      score: score
+    }
+
+    players[name] = player;
+    turns.push(name);
+
+    this.setState({
+      players: players,
+      turns: turns
+    });
+  },
+  removePlayer: function(name) {
+    var players = this.state.players;
+    var turns = this.state.turns;
+    var player = players[name];
+
+    turns.splice(player.turn, 1);
+    delete(player);
+
+    this.setState({
+      players: players,
+      turns: turns
+    });
+  },
+  selectButton: function(button, callBack) {
+    var lastButton = this.state.buttonSelected;
+
+    this.setState({
+      buttonSelected: button === lastButton ? '' : button
+    });
+    callBack.func.apply(this, callBack.args);
   }
 });

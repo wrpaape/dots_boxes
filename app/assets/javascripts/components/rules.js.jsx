@@ -2,8 +2,13 @@
 'use strict';
 
 var Rules = React.createClass({
-
   render: function() {
-    return <div />;
+    var rules = this.props.rules;
+
+    return (
+      <div className='rules'>
+        { rules }
+      </div>
+    );
   }
 });
