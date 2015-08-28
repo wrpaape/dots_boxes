@@ -15,14 +15,6 @@ class Game < ActiveRecord::Base
               }
             },
             {
-              computer: {
-                except: [
-                  :id,
-                  :spec_id
-                ]
-              }
-            },
-            {
               layout: {
                 methods: [
                   :type,

@@ -7,17 +7,10 @@ class CreateSpecTables < ActiveRecord::Migration
     end
 
     create_table :players do |t|
+      t.integer :default
       t.integer :min
       t.integer :max
-      t.belongs_to :spec
-    end
-
-    create_table :computers do |t|
-      t.integer :min
-      t.integer :max
-      t.boolean :easy
-      t.boolean :medium
-      t.boolean :hard
+      t.integer :levels
       t.belongs_to :spec
     end
 
@@ -28,6 +21,7 @@ class CreateSpecTables < ActiveRecord::Migration
 
     create_table :dimensions do |t|
       t.string :type
+      t.integer :default
       t.integer :min
       t.integer :max
       t.belongs_to :layout

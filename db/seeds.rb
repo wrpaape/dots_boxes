@@ -29,21 +29,21 @@ The winner of the game is the player with the most points.
         {
           "Spec" => {
             min: 2,
-            max: 20,
+            max: 10,
             children: [
               {
                 "Player" => {
+                  default: 1,
                   min: 0,
-                  max: 10
+                  max: 10,
                 }
               },
               {
                 "Computer" => {
+                  default: 1,
                   min: 0,
                   max: 10,
-                  easy: true,
-                  medium: true,
-                  hard: true
+                  levels: 3
                 }
               },
               {
@@ -51,12 +51,14 @@ The winner of the game is the player with the most points.
                   children: [
                     {
                       "Row" => {
+                        default: 3,
                         min: 1,
                         max: 10
                       }
                     },
                     {
                       "Column" => {
+                        default: 3,
                         min: 1,
                         max: 10
                       },

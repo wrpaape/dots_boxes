@@ -4,7 +4,8 @@
 var Show = React.createClass({
   getInitialState: function() {
     return({
-      buttonSelected: ''
+      buttonSelected: '',
+      players:
     });
   },
   render: function() {
@@ -13,12 +14,13 @@ var Show = React.createClass({
     var startGame = this.props.startGame;
     var stopGame = this.props.stopGame;
     var buttonSelected = this.state.buttonSelected;
-    var undefinedAction = function() { return; };
+    var players = this.state.players;
+    var undefinedCallBack = function() { return; };
     var buttons = {
-      'rules': { action: undefinedAction, rules: game.rules },
-      'players': { action: undefinedAction, player: game.spec.player, computer: game.spec.computer },
-      'play': { action: startGame },
-      'back': { action: goBack }
+      'rules': { callBack: { callBack: undefinedCallBack, args: [] }, rules: game.rules },
+      'players': { callBack: { callback: undefinedCallBack, args: [] }, player: game.spec.player, computer: game.spec.computer },
+      'play': { callBack: { callback: startGame, args: [game.id, ] } },
+      'back': { callBack: { goBack } }
     };
 
     var allButtons = Object.keys(buttons).map(function(button) {
@@ -27,7 +29,7 @@ var Show = React.createClass({
 
       return(
         <div key={ button }>
-          <div className={ button + '-button ' } onClick={ this.selectButton.bind(this, button, props[action]) }>
+          <div className={ button + '-button ' } onClick={ this.selectButton.bind(this, button, props.callBack) }>
             { button }
           </div>
           <div className={ button + '-component ' + (button === buttonSelected) }>
@@ -43,10 +45,10 @@ var Show = React.createClass({
       </div>
     );
   },
-  selectButton: function(button, action) {
+  selectButton: function(button, callBack) {
     this.setState({
       buttonSelected: button
     });
-    action();
+    callBack.apply(this, args);
   }
 });
