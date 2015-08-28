@@ -13,28 +13,40 @@ var Show = React.createClass({
     var startGame = this.props.startGame;
     var stopGame = this.props.stopGame;
     var buttonSelected = this.state.buttonSelected;
-
+    var undefinedAction = function() { return; };
     var buttons = {
-      'rules': { rules: game.rules },
-      'players': { player: game.spec.player, computer: game.spec.computer },
-      'play': { startGame: startGame },
-      'back': { goBack: goBack }
+      'rules': { action: undefinedAction, rules: game.rules },
+      'players': { action: undefinedAction, player: game.spec.player, computer: game.spec.computer },
+      'play': { action: startGame },
+      'back': { action: goBack }
     };
+
     var allButtons = Object.keys(buttons).map(function(button) {
-      var component = button.charAt(0).toUpperCase() + button.slice(1);
-      var className = button + ' ' + (button === buttonSelected);
+      var component = window[button.charAt(0).toUpperCase() + button.slice(1)];
+      var props = buttons[button];
 
       return(
-        <div key={ button } className={ className }>
-          React.createElement(window[component], buttons[button] )
+        <div key={ button }>
+          <div className={ button + '-button ' } onClick={ this.selectButton.bind(this, button, props[action]) }>
+            { button }
+          </div>
+          <div className={ button + '-component ' + (button === buttonSelected) }>
+            { React.createElement(component, props) }
+          </div>
         </div>
       );
-    });
+    }.bind(this));
 
     return(
       <div className='show-wrap'>
         { allButtons }
       </div>
     );
+  },
+  selectButton: function(button, action) {
+    this.setState({
+      buttonSelected: button
+    });
+    action();
   }
 });

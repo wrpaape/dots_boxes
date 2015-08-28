@@ -11,7 +11,7 @@ var DotsBoxes = React.createClass({
     var cols = 2;
     // var compTurns = [], playerTurns = [];
     // for(var i = 1; i < 4; i++) { compTurns.push(-i); playerTurns.push(i); }
-
+    var turn = 1;
     var lines = [], openLines = [], boxes = [];
     var linesByPriority = [[], [], [], [], [], []];
     var boxesByScore = [[], [], [], [], []];
@@ -36,7 +36,7 @@ var DotsBoxes = React.createClass({
     }
 
     return({
-      turn: turns[0],
+      turn: 1,
       lines: lines,
       openLines: openLines,
       linesByPriority: linesByPriority,

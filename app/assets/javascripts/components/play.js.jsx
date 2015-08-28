@@ -4,6 +4,6 @@
 var Play = React.createClass({
 
   render: function() {
-    return <div />;
+    return return <div />;
   }
 });

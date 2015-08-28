@@ -24,25 +24,25 @@ var Index = React.createClass({
           <div className='title' onClick={ this.selectGame.bind(this, id) }>
             { game.title }
           </div>
-          <div className={ 'selected-game ' + idSelected === id }>
+          <div className={ 'selected-game ' + (idSelected === id) }>
             <Show game={ game } goBack={ this.selectGame } startGame={ this.startGame } stopGame={ this.stopGame } />
           </div>
         </div>
       );
 
       allGames.push(
-        <div key={ 'game-' + id } className={ id === idPlaying + ' playing id-' + id }>
-          React.createElement(window[game.component], { spec: game.spec, players: players })
+        <div key={ 'game-' + id } className={ (id === idPlaying) + ' playing id-' + id }>
+          { React.createElement(window[game.component], { spec: game.spec, players: players }) }
         </div>
       );
-    });
+    }.bind(this));
 
     return(
       <div className='index-wrap'>
-        <div className={ 'index ' + idPlaying === 0 }>
+        <div className={ 'index ' + (idPlaying === 0) }>
           { index }
         </div>
-        <div className={ 'all-games ' + idPlaying > 0 }>
+        <div className={ 'all-games ' + (idPlaying > 0) }>
           { allGames }
         </div>
       </div>

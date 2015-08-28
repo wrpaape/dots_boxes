@@ -1,6 +1,10 @@
 $player-color: blue;
 $computer-color: red;
 
+.false {
+  display: none;
+}
+
 div.board {
   position: relative;
   text-align: center;
