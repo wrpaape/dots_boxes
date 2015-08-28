@@ -64,21 +64,32 @@ var Show = React.createClass({
         players['player' + i] = {
           token: i,
           turn: turn++,
-          score: scorePlayers
+          score: scorePlayers,
+          handicap: 0
         }
       }
       if (i <= numComputers) {
         players['computer' + i] = {
           token: -i,
           turn: turn++,
-          score: scoreComputers
+          score: scoreComputers,
+          handicap: 0,
+          difficulty: 'normal'
         }
       }
     }
 
     return players;
   },
-  addPlayer: function(name) {
+  selectButton: function(button, callBack) {
+    var lastButton = this.state.buttonSelected;
+
+    this.setState({
+      buttonSelected: button === lastButton ? '' : button
+    });
+    callBack.func.apply(this, callBack.args);
+  },
+  addPlayer: function(input) {
     var game = this.props.game;
     var score = game.spec.player.score;
     var players = this.state.players;
@@ -86,12 +97,22 @@ var Show = React.createClass({
     var newToken = 0;
     var tokens = players.map(function(player) {
       return player.token;
-    });
-    var token = tokens.sort().pop() + 1;
-    var player = {
-      name: name,
-      token: token,
-      score: score
+    }).sort();
+    var name, token, handicap, difficulty;
+    var player = {};
+
+
+
+    switch (typeof(args)) {
+      case 'object':
+        player.difficulty = args.difficulty;
+      case 'number':
+        player.token = tokens.shift() - 1;
+        player.name = args['name'] || 'computer' + -token;
+        break;
+      default:
+        player.token = tokens.pop() + 1;
+        player.name = args || 'player' + token;
     }
 
     players[name] = player;
@@ -115,12 +136,7 @@ var Show = React.createClass({
       turns: turns
     });
   },
-  selectButton: function(button, callBack) {
-    var lastButton = this.state.buttonSelected;
+  updatePlayers: function(name) {
 
-    this.setState({
-      buttonSelected: button === lastButton ? '' : button
-    });
-    callBack.func.apply(this, callBack.args);
   }
 });
