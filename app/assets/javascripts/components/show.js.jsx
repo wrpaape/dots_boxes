@@ -4,43 +4,36 @@
 var Show = React.createClass({
   getInitialState: function() {
     return({
-      selected: '',
-      playing: false
+      buttonSelected: ''
     });
   },
   render: function() {
     var game = this.props.game;
+    var goBack = this.props.goBack;
     var startGame = this.props.startGame;
-    var selected = this.state.selected;
-    var playing = this.state.playing;
+    var stopGame = this.props.stopGame;
+    var buttonSelected = this.state.buttonSelected;
 
-    var buttons = ['rules', 'players', 'play', 'back'].map(function() {
+    var buttons = {
+      'rules': { rules: game.rules },
+      'players': { player: game.spec.player, computer: game.spec.computer },
+      'play': { startGame: startGame },
+      'back': { goBack: goBack }
+    };
+    var allButtons = Object.keys(buttons).map(function(button) {
+      var component = button.charAt(0).toUpperCase() + button.slice(1);
+      var className = button + ' ' + (button === buttonSelected);
+
       return(
-        <div key={ id } className='game-wrap'>
-          <div className='title' onClick={ this.selectGame.bind(this, id) }>
-            { game.title }
-          </div>
-          <div className={ 'selected-game ' + selected === id }>
-            <Show game={ game } selectGame={ this.selectGame } startGame={ this.startGame } />
-          </div>
+        <div key={ button } className={ className }>
+          React.createElement(window[component], buttons[button] )
         </div>
       );
     });
-    // var turns = {}, scoreboard = {};
-    // for(var i = 1; i < 8; i+=2) {
-    //   for (var j = 0; j < 2; j++) {
-    //     turns['player ' + (i + j)] = (1 - 2 * j) * (i + 1) / 2;
-    //     scoreboard['player ' + (i + j)] = 0;
-    //   }
-    // }
-    if (playing) {
-      this.startGame(game);
-    }
+
     return(
       <div className='show-wrap'>
-        <div className={ 'game' + playing }>
-          React.createElement(window[game.component], { spec: game.spec, turns: turns })
-        </div>
+        { allButtons }
       </div>
     );
   }
