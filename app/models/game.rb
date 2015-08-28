@@ -10,6 +10,15 @@ class Game < ActiveRecord::Base
               player: {
                 except: [
                   :id,
+                  :spec_id,
+                  :levels
+                ]
+              }
+            },
+            {
+              computer: {
+                except: [
+                  :id,
                   :spec_id
                 ]
               }

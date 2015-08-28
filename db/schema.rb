@@ -16,17 +16,9 @@ ActiveRecord::Schema.define(version: 20150826181036) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "computers", force: :cascade do |t|
-    t.integer "min"
-    t.integer "max"
-    t.boolean "easy"
-    t.boolean "medium"
-    t.boolean "hard"
-    t.integer "spec_id"
-  end
-
   create_table "dimensions", force: :cascade do |t|
     t.string  "type"
+    t.integer "default"
     t.integer "min"
     t.integer "max"
     t.integer "layout_id"
@@ -44,8 +36,10 @@ ActiveRecord::Schema.define(version: 20150826181036) do
   end
 
   create_table "players", force: :cascade do |t|
+    t.integer "default"
     t.integer "min"
     t.integer "max"
+    t.integer "levels"
     t.integer "spec_id"
   end
 

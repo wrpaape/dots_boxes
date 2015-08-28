@@ -39,7 +39,7 @@ The winner of the game is the player with the most points.
                 }
               },
               {
-                "Computer" => {
+                "Player" => {
                   default: 1,
                   min: 0,
                   max: 10,

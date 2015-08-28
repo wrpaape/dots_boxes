@@ -1,5 +1,6 @@
 class Spec < ActiveRecord::Base
-  has_one :player
-  has_one :computer
+  has_many :players
+  has_one :player, -> { where(levels: nil) }, class_name: "Player"
+  has_one :computer, -> { where("levels > 0") }, class_name: "Player"
   has_one :layout
 end
