@@ -4,22 +4,31 @@
 var Index = React.createClass({
   getInitialState: function() {
     return({
-      selected: 0,
-      playing: 0
+      idSelected: 0,
+      idPlaying: 0,
+      players: {}
     });
   },
   render: function() {
     var games = this.props.games;
-    var selected = this.state.selected;
+    var idSelected = this.state.idSelected;
+    var idPlaying = this.state.idPlaying;
+    var players = this.state.players;
+    var allGames = [];
     var index = games.map(function(game) {
       var id = game.id;
+      allGames.push(
+        <div key={ 'game-' + id } className={ id === idPlaying + ' playing id-' + id }>
+          React.createElement(window[game.component], { spec: game.spec, players: players })
+        </div>
+      );
       return(
-        <div key={ id } className='show-wrap'>
-          <div className='show-title' onClick={ this.selectGame.bind(this, id) }>
+        <div key={ 'index-' + id } className='game-wrap'>
+          <div className='title' onClick={ this.selectGame.bind(this, id) }>
             { game.title }
           </div>
-          <div className={ 'show-component ' + selected === id }>
-            <Show game={ game } startGame={ this.startGame } />
+          <div className={ 'selected-game ' + idSelected === id }>
+            <Show game={ game } goBack={ this.selectGame } startGame={ this.startGame } stopGame={ this.stopGame } />
           </div>
         </div>
       );
@@ -27,18 +36,31 @@ var Index = React.createClass({
 
     return(
       <div className='index-wrap'>
-        { index }
+        <div className={ 'index ' + idPlaying > 0 }>
+          { index }
+        </div>
+        <div className={ 'all-games ' + idPlaying > 0 }>
+          { allGames }
+        </div>
       </div>
     );
   },
   selectGame: function(id) {
     this.setState({
-      selected: id
+      idSelected: id || 0
     })
   },
-  startGame: function(id) {
+  startGame: function(id, players) {
     this.setState({
-      playing: id
+      idSelected: 0,
+      idPlaying: id,
+      players: players
+    })
+  },
+  stopGame: function() {
+    this.setState({
+      idPlaying: 0,
+      players: {}
     })
   }
 });
