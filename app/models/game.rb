@@ -6,11 +6,38 @@ class Game < ActiveRecord::Base
       include: {
         spec: {
           include: [
-            :player,
-            :computer,
-            layout: {
-              methods: [:type, :dimensions]
+            {
+              player: {
+                except: [
+                  :id,
+                  :spec_id
+                ]
+              }
+            },
+            {
+              computer: {
+                except: [
+                  :id,
+                  :spec_id
+                ]
+              }
+            },
+            {
+              layout: {
+                methods: [
+                  :type,
+                  :dimensions
+                ],
+                except: [
+                  :id,
+                  :spec_id
+                ]
+              }
             }
+          ],
+          except: [
+            :id,
+            :game_id
           ]
         }
       }

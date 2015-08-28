@@ -18,12 +18,12 @@ games = [
     "Game" => {
       title: "Dots and Boxes",
       rules:
-  """
-  Starting with an empty grid of dots, players take turns, adding a single horizontal or vertical line between two unjoined adjacent dots.
-  A player who completes the fourth side of a 1×1 box earns one point and takes another turn.
-  The game ends when no more lines can be placed.
-  The winner of the game is the player with the most points.
-  """[1..-1].gsub!("\n", "  "),
+"""
+Starting with an empty grid of dots, players take turns, adding a single horizontal or vertical line between two unjoined adjacent dots.
+A player who completes the fourth side of a 1×1 box earns one point and takes another turn.
+The game ends when no more lines can be placed.
+The winner of the game is the player with the most points.
+"""[1..-1].gsub!("\n", "  "),
       component: "DotsBoxes",
       children: [
         {

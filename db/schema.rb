@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 20150826181036) do
     t.integer "min"
     t.integer "max"
     t.boolean "easy"
-    t.boolean "med"
+    t.boolean "medium"
     t.boolean "hard"
     t.integer "spec_id"
   end

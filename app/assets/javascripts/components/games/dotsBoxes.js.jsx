@@ -5,9 +5,13 @@ var DotsBoxes = React.createClass({
   getInitialState: function() {
     var spec = this.props.spec;
     var dimensions = spec.layout.dimensions;
-    var rows = dimensions[0].max;
-    var cols = dimensions[1].max;
-    var turn = 1;
+    // var rows = dimensions.rows.max;
+    // var cols = dimensions.columns.max;
+    var rows = 2;
+    var cols = 2;
+    // var compTurns = [], playerTurns = [];
+    // for(var i = 1; i < 4; i++) { compTurns.push(-i); playerTurns.push(i); }
+
     var lines = [], openLines = [], boxes = [];
     var linesByPriority = [[], [], [], [], [], []];
     var boxesByScore = [[], [], [], [], []];
@@ -32,7 +36,7 @@ var DotsBoxes = React.createClass({
     }
 
     return({
-      turn: turn,
+      turn: turns[0],
       lines: lines,
       openLines: openLines,
       linesByPriority: linesByPriority,
