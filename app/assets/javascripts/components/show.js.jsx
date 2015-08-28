@@ -3,9 +3,19 @@
 
 var Show = React.createClass({
   getInitialState: function() {
+    var game = this.props.game;
+    var player = game.spec.player;
+    var computer = game.spec.computer;
+    var players = this.getDefaultPlayers(player.default, computer.default);
+    var turns = Object.keys(players).map(function(name) {
+      var turn = {};
+      turn[name] = players[name];
+      return turn;
+    });
     return({
       buttonSelected: '',
-      players:
+      players: players,
+      turns:
     });
   },
   render: function() {
@@ -44,6 +54,20 @@ var Show = React.createClass({
         { allButtons }
       </div>
     );
+  },
+  getDefaultPlayers: function(numPlayers, numComputers) {
+    var numBigger = numPlayers > numComputers ? numPlayers : numComputers;
+    var players = {};
+    for(var i = 1; i <= numBigger; i++) {
+      if (i <= numPlayers) {
+        players['player' + i] = i;
+      }
+      if (i <= numComputers) {
+        players['computer' + i] = -i;
+      }
+    }
+
+    return players;
   },
   selectButton: function(button, callBack) {
     this.setState({
