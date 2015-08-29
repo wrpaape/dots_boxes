@@ -1,9 +1,21 @@
 $player-color: blue;
 $computer-color: red;
 
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
 .false {
   display: none;
 }
+
+
+.alert {
+  animation: fade-out 1s ease-in 1s forwards;
+}
+
 
 div.board {
   position: relative;
