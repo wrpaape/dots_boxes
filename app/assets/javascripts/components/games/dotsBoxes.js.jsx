@@ -3,8 +3,9 @@
 
 var DotsBoxes = React.createClass({
   getInitialState: function() {
-    var spec = this.props.spec;
-    var dimensions = spec.layout.dimensions;
+    var game = this.props.game;
+
+    var dimensions = game.spec.layout.dimensions;
     // var rows = dimensions.rows.max;
     // var cols = dimensions.columns.max;
     var rows = 2;
@@ -47,6 +48,7 @@ var DotsBoxes = React.createClass({
     });
   },
   componentDidUpdate: function() {
+    // this.props.saveGame(this.props.game, this.state);
     var turn = this.state.turn;
     var openLines = this.state.openLines;
     if (openLines.length > 0) {

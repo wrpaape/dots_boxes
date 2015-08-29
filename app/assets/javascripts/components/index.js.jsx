@@ -38,7 +38,7 @@ var Index = React.createClass({
             React.createElement(
               window[game.component],
               {
-                spec: game.spec,
+                game: game,
                 players: players,
                 saveGame: this.saveGame,
                 quitGame: this.quitGame
@@ -64,6 +64,7 @@ var Index = React.createClass({
     );
   },
   selectGame: function(id) {
+    this.saveGame(this.props.games[0], this.state);
     this.setState({
       idSelected: id || 0
     })
@@ -76,22 +77,27 @@ var Index = React.createClass({
     })
   },
   saveGame: function(game, gameState) {
-    var saveMessage = game.title + ' save failed!'
     $.ajax({
       type: 'POST',
+      url: game.saveURL,
       dataType: 'json',
-      url: this.props.saveURL + game.id,
       headers: {
         'X-HTTP-Method-Override': 'PUT'
       },
-      data: gameState,
-      success: function(successMessage) {
-        return saveMessage = successMessage;
-      }
-    });
-
-    this.setState({
-      alert: saveMessage
+      data: {
+        id: game.id,
+        state: gameState
+      },
+      success: function(response) {
+        this.setState({
+          alert: response.message
+        });
+      }.bind(this),
+      error: function() {
+        this.setState({
+          alert: game.title + ' save failed!'
+        });
+      }.bind(this)
     });
   },
   quitGame: function() {

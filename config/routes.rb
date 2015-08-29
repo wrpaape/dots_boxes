@@ -1,4 +1,4 @@
 Rails.application.routes.draw do
-  put "/:id", to: "games#save"
+  resource :saves
   root "games#index"
 end

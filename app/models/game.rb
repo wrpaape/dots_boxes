@@ -1,5 +1,5 @@
 class Game < ActiveRecord::Base
-  mattr_accessor :current_user
+  mattr_accessor :current_user, :saves_path
   has_many :saves
   has_many :users, through: :saves
   has_one :current_save, ->(current_user) { where(user_id: current_user.id) }, class_name: "Save"
@@ -46,11 +46,18 @@ class Game < ActiveRecord::Base
           ]
         }
       },
-      methods: :state
+      methods: [
+        :state,
+        :saveURL
+      ]
     )
   end
 
   def state
     current_save.state
+  end
+
+  def saveURL
+    saves_path
   end
 end
