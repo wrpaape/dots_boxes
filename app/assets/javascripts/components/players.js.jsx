@@ -15,23 +15,23 @@ var Players = React.createClass({
         args: [{ difficulty: undefined }]
       },
       'clear players': {
-        func: this.clearPlayers,
+        func: this.props.clearPlayers,
         args: []
       },
       'scramble players': {
-        func: this.scramblePlayers,
+        func: this.props.shufflePlayers,
         args: []
       }
     };
-    var allPlayers = turns.map(function(name) {
-      <tr key={ name }>
-        <td>{ name }</td>
-        <td></td>
-        <td></td>
-      </tr>
-    });
 
-    var buttons =
+    var allPlayers = turns.map(function(name) {
+      return (
+        <tr key={ name }>
+          <td>{ name }</td>
+          <td>{ players[name].handicap }</td>
+        </tr>
+      );
+    });
 
     return(
       <div className='players-wrap'>
@@ -42,7 +42,7 @@ var Players = React.createClass({
           </tr>
           { allPlayers }
         </table>
-        { buttons }
+        { this.props.getButtons(buttons) }
       </div>
     );
   }

@@ -23,31 +23,25 @@ var Show = React.createClass({
     var game = this.props.game;
     var spec = game.spec;
     var stopGame = this.props.stopGame;
-    var buttonSelected = this.state.buttonSelected;
     var players = this.state.players;
     var turns = this.state.turns;
-    var undefinedCallBack = function() { return; };
+
     var buttons = {
       'rules': {
-        callBack: {
-          func: undefinedCallBack,
-          args: []
-        },
         props: {
           rules: game.rules
         }
       },
       'players': {
-        callBack: {
-          func: undefinedCallBack,
-          args: []
-        },
         props: {
           spec: spec,
           players: players,
           turns: turns,
+          getButtons: this.getButtons,
           addPlayer: this.addPlayer,
-          removePlayer: this.removePlayer
+          removePlayer: this.removePlayer,
+          clearPlayers: this.clearPlayers,
+          shufflePlayers: this.shufflePlayers
         }
       },
       'play': {
@@ -64,25 +58,9 @@ var Show = React.createClass({
       }
     };
 
-    var allButtons = Object.keys(buttons).map(function(button) {
-      var component = window[button.charAt(0).toUpperCase() + button.slice(1)];
-      var props = buttons[button];
-
-      return(
-        <div key={ button }>
-          <div className={ button + '-button ' } onClick={ this.selectButton.bind(this, button, props.callBack) }>
-            { button }
-          </div>
-          <div className={ button + '-component ' + (button === buttonSelected) }>
-            { React.createElement(component, props.props) }
-          </div>
-        </div>
-      );
-    }.bind(this));
-
     return(
       <div className='show-wrap'>
-        { allButtons }
+        { this.getButtons(buttons) }
       </div>
     );
   },
@@ -110,12 +88,45 @@ var Show = React.createClass({
 
     return players;
   },
+  getButtons: function(buttons) {
+    var buttonSelected = this.state.buttonSelected;
+
+    return Object.keys(buttons).map(function(button) {
+      var componentName = window[button.charAt(0).toUpperCase() + button.slice(1)];
+      var props = buttons[button];
+      var component = <div />;
+      var callBack = function() { return; };
+
+      Object.keys(props).forEach(function(prop) {
+        switch (prop) {
+          case 'callBack':
+            callBack = props.callBack;
+            break;
+          case 'props':
+            component =
+              <div className={ button + '-component ' + (button === buttonSelected) }>
+                { React.createElement(componentName, props.props) }
+              </div>;
+        }
+      }.bind(this));
+
+      return(
+        <div key={ button }>
+          <div className={ button + '-button ' } onClick={ this.selectButton.bind(this, button, callBack) }>
+            { button }
+          </div>
+          { component }
+        </div>
+      );
+    }.bind(this));
+  },
   selectButton: function(button, callBack) {
     var lastButton = this.state.buttonSelected;
 
     this.setState({
       buttonSelected: button === lastButton ? '' : button
     });
+
     callBack.func.apply(this, callBack.args);
   },
   addPlayer: function(input) {
