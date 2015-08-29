@@ -7,7 +7,7 @@ var Index = React.createClass({
       idSelected: 0,
       idPlaying: 0,
       players: {},
-      alert: 'welcome'
+      alert: this.props.userId ? 'welcome' : 'welcome back'
     });
   },
   render: function() {
