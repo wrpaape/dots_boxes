@@ -46,7 +46,7 @@ var Show = React.createClass({
           player: spec.player,
           computer: spec.computer,
           players: this.state.players,
-          turns: this.state.turns
+          turns: this.state.turns,
           addPlayer: this.addPlayer,
           removePlayer: this.removePlayer
         }
@@ -151,10 +151,9 @@ var Show = React.createClass({
   removePlayer: function(name) {
     var players = this.state.players;
     var turns = this.state.turns;
-    var player = players[name];
 
-    turns.splice(player.turn, 1);
-    delete(player);
+    turns.splice(players[name].turn, 1);
+    delete(players[name]);
 
     this.setState({
       players: players,

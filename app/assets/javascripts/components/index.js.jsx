@@ -6,7 +6,8 @@ var Index = React.createClass({
     return({
       idSelected: 0,
       idPlaying: 0,
-      players: {}
+      players: {},
+      alert: 'welcome'
     });
   },
   render: function() {
@@ -14,6 +15,7 @@ var Index = React.createClass({
     var idSelected = this.state.idSelected;
     var idPlaying = this.state.idPlaying;
     var players = this.state.players;
+    var alert = this.state.alert;
     var allGames = [], index = [];
 
     games.forEach(function(game) {
@@ -21,7 +23,7 @@ var Index = React.createClass({
 
       index.push(
         <div key={ 'index-' + id } className='game-wrap'>
-          <div className='title' onClick={ this.selectGame.bind(this, id) }>
+          <div className={ 'title ' + (idSelected === 0) } onClick={ this.selectGame.bind(this, id) }>
             { game.title }
           </div>
           <div className={ 'selected-game ' + (idSelected === id) }>
@@ -49,6 +51,9 @@ var Index = React.createClass({
 
     return(
       <div className='index-wrap'>
+        <div className='alert'>
+          { alert }
+        </div>
         <div className={ 'index ' + (idPlaying === 0) }>
           { index }
         </div>
@@ -70,10 +75,26 @@ var Index = React.createClass({
       players: players
     })
   },
-  saveGame: function(id, gameState) {
+  saveGame: function(game, gameState) {
+    var saveMessage = game.title + ' save failed!'
+    $.ajax({
+      type: 'POST',
+      dataType: 'json',
+      url: this.props.saveURL + game.id,
+      headers: {
+        'X-HTTP-Method-Override': 'PUT'
+      },
+      data: gameState,
+      success: function(successMessage) {
+        return saveMessage = successMessage;
+      }
+    });
 
+    this.setState({
+      alert: saveMessage
+    });
   },
-  stopGame: function() {
+  quitGame: function() {
     this.setState({
       idPlaying: 0,
       players: {}

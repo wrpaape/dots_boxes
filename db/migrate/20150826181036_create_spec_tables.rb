@@ -13,7 +13,7 @@ class CreateSpecTables < ActiveRecord::Migration
       t.integer :max
       t.integer :levels
       t.belongs_to :spec
-    end
+    endx
 
     create_table :layouts do |t|
       t.string :type
