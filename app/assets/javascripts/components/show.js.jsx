@@ -21,17 +21,48 @@ var Show = React.createClass({
   },
   render: function() {
     var game = this.props.game;
-    var goBack = this.props.goBack;
-    var startGame = this.props.startGame;
+    var spec = game.spec;
     var stopGame = this.props.stopGame;
     var buttonSelected = this.state.buttonSelected;
     var players = this.state.players;
     var undefinedCallBack = function() { return; };
     var buttons = {
-      'rules': { callBack: { func: undefinedCallBack, args: [] }, rules: game.rules },
-      'players': { callBack: { func: undefinedCallBack, args: [] }, player: game.spec.player, computer: game.spec.computer },
-      'play': { callBack: { func: startGame, args: [game.id, players] } },
-      'back': { callBack: { func: goBack, args: [] } }
+      'rules': {
+        callBack: {
+          func: undefinedCallBack,
+          args: []
+        },
+        props: {
+          rules: game.rules
+        }
+      },
+      'players': {
+        callBack: {
+          func: undefinedCallBack,
+          args: []
+        },
+        props: {
+          spec: spec,
+          player: spec.player,
+          computer: spec.computer,
+          players: this.state.players,
+          turns: this.state.turns
+          addPlayer: this.addPlayer,
+          removePlayer: this.removePlayer
+        }
+      },
+      'play': {
+        callBack: {
+          func: this.props.startGame,
+          args: [game.id, players]
+        }
+      },
+      'back': {
+        callBack: {
+          func: this.props.goBack,
+          args: []
+        }
+      }
     };
 
     var allButtons = Object.keys(buttons).map(function(button) {
@@ -44,7 +75,7 @@ var Show = React.createClass({
             { button }
           </div>
           <div className={ button + '-component ' + (button === buttonSelected) }>
-            { React.createElement(component, props) }
+            { React.createElement(component, props.props) }
           </div>
         </div>
       );

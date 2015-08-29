@@ -25,14 +25,24 @@ var Index = React.createClass({
             { game.title }
           </div>
           <div className={ 'selected-game ' + (idSelected === id) }>
-            <Show game={ game } goBack={ this.selectGame } startGame={ this.startGame } stopGame={ this.stopGame } />
+            <Show game={ game } goBack={ this.selectGame } startGame={ this.startGame } />
           </div>
         </div>
       );
 
       allGames.push(
         <div key={ 'game-' + id } className={ (id === idPlaying) + ' playing id-' + id }>
-          { React.createElement(window[game.component], { spec: game.spec, players: players }) }
+          {
+            React.createElement(
+              window[game.component],
+              {
+                spec: game.spec,
+                players: players,
+                saveGame: this.saveGame,
+                quitGame: this.quitGame
+              }
+            )
+          }
         </div>
       );
     }.bind(this));
@@ -59,6 +69,9 @@ var Index = React.createClass({
       idPlaying: id,
       players: players
     })
+  },
+  saveGame: function(id, gameState) {
+
   },
   stopGame: function() {
     this.setState({
