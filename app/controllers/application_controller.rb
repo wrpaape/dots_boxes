@@ -3,6 +3,6 @@ class ApplicationController < ActionController::Base
   before_filter :current_user
 
   def current_user
-    @_current_user ||= User.find_or_create_by(id: session[:current_user_id] ||= User.count + 1)
+    Game.current_user = @_current_user ||= User.find_or_create_by(id: session[:current_user_id] ||= User.count + 1)
   end
 end
