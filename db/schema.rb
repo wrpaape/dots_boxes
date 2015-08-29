@@ -39,12 +39,12 @@ ActiveRecord::Schema.define(version: 20150826181036) do
     t.integer "default"
     t.integer "min"
     t.integer "max"
-    t.integer "score"
     t.integer "levels"
     t.integer "spec_id"
   end
 
   create_table "specs", force: :cascade do |t|
+    t.integer "score"
     t.integer "min"
     t.integer "max"
     t.integer "game_id"

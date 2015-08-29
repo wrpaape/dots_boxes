@@ -3,10 +3,11 @@
 
 var Show = React.createClass({
   getInitialState: function() {
-    var game = this.props.game;
-    var player = game.spec.player;
-    var computer = game.spec.computer;
-    var players = this.getDefaultPlayers(player.num, player.score, computer.num, computer.score);
+    var spec = this.props.game.spec;
+    var numPlayers = spec.player.default;
+    var numComputers = spec.computer.default;
+    var startScore = spec.score;
+    var players = this.getDefaultPlayers(numPlayers, numComputers, startScore);
     var turns = [];
     Object.keys(players).forEach(function(name) {
       turns[players[name].turn] = name;
@@ -55,7 +56,7 @@ var Show = React.createClass({
       </div>
     );
   },
-  getDefaultPlayers: function(numPlayers, scorePlayers, numComputers, scoreComputers) {
+  getDefaultPlayers: function(numPlayers, numComputers, startScore) {
     var numBigger = numPlayers > numComputers ? numPlayers : numComputers;
     var turn = 0;
     var players = {};
@@ -64,16 +65,14 @@ var Show = React.createClass({
         players['player' + i] = {
           token: i,
           turn: turn++,
-          score: scorePlayers,
-          handicap: 0
+          score: startScore
         }
       }
       if (i <= numComputers) {
         players['computer' + i] = {
           token: -i,
           turn: turn++,
-          score: scoreComputers,
-          handicap: 0,
+          score: startScore,
           difficulty: 'normal'
         }
       }
@@ -90,29 +89,24 @@ var Show = React.createClass({
     callBack.func.apply(this, callBack.args);
   },
   addPlayer: function(input) {
-    var game = this.props.game;
-    var score = game.spec.player.score;
+    var spec = this.props.game.spec;
+    var startScore = spec.score;
     var players = this.state.players;
     var turns = this.state.turns;
-    var newToken = 0;
-    var tokens = players.map(function(player) {
-      return player.token;
+    var tokens = turns.map(function(name) {
+      return players.name.token;
     }).sort();
-    var name, token, handicap, difficulty;
-    var player = {};
 
-
-
-    switch (typeof(args)) {
-      case 'object':
-        player.difficulty = args.difficulty;
-      case 'number':
-        player.token = tokens.shift() - 1;
-        player.name = args['name'] || 'computer' + -token;
-        break;
-      default:
-        player.token = tokens.pop() + 1;
-        player.name = args || 'player' + token;
+    var isComputer = Object.keys(input).indexOf('difficulty') > 0;
+    var token = isComputer ? tokens.shift() - 1 : tokens.pop() + 1;
+    var name = input.name || isComputer ? 'computer' + -token : 'player' + token;
+    var player = {
+      token: token,
+      turn: input.turn || turns.length,
+      score: startScore + input.handicap || startScore
+    };
+    if (isComputer) {
+      player.difficulty = input.difficulty || 'normal';
     }
 
     players[name] = player;
@@ -135,8 +129,5 @@ var Show = React.createClass({
       players: players,
       turns: turns
     });
-  },
-  updatePlayers: function(name) {
-
   }
 });
