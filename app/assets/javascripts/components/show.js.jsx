@@ -25,6 +25,7 @@ var Show = React.createClass({
     var stopGame = this.props.stopGame;
     var buttonSelected = this.state.buttonSelected;
     var players = this.state.players;
+    var turns = this.state.turns;
     var undefinedCallBack = function() { return; };
     var buttons = {
       'rules': {
@@ -43,10 +44,8 @@ var Show = React.createClass({
         },
         props: {
           spec: spec,
-          player: spec.player,
-          computer: spec.computer,
-          players: this.state.players,
-          turns: this.state.turns,
+          players: players,
+          turns: turns,
           addPlayer: this.addPlayer,
           removePlayer: this.removePlayer
         }
@@ -54,7 +53,7 @@ var Show = React.createClass({
       'play': {
         callBack: {
           func: this.props.startGame,
-          args: [game.id, players]
+          args: [game.id, players, turns]
         }
       },
       'back': {
@@ -154,6 +153,33 @@ var Show = React.createClass({
 
     turns.splice(players[name].turn, 1);
     delete(players[name]);
+
+    this.setState({
+      players: players,
+      turns: turns
+    });
+  },
+  clearPlayers: function() {
+    this.setState({
+      players: {},
+      turns: []
+    });
+  },
+  shufflePlayers: function() {
+    var turns = this.state.turns;
+    var players = this.state.players;
+    var turn = turns.length;
+    var randTurn, name, randName;
+
+    while (turn > 0) {
+      randTurn = Math.floor(Math.random() * turn--);
+      name = turns[turn];
+      randName = turns[randTurn];
+      turns[turn] = randName;
+      turns[randTurn] = name;
+      players[randName].turn = turn;
+      players[name].turn = randTurn;
+    }
 
     this.setState({
       players: players,

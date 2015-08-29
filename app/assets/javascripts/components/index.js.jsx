@@ -7,6 +7,7 @@ var Index = React.createClass({
       idSelected: 0,
       idPlaying: 0,
       players: {},
+      turns: [],
       alert: this.props.userId ? 'welcome' : 'welcome back'
     });
   },
@@ -15,6 +16,7 @@ var Index = React.createClass({
     var idSelected = this.state.idSelected;
     var idPlaying = this.state.idPlaying;
     var players = this.state.players;
+    var turns = this.state.turns;
     var alert = this.state.alert;
     var allGames = [], index = [];
 
@@ -40,6 +42,7 @@ var Index = React.createClass({
               {
                 game: game,
                 players: players,
+                turns: turns,
                 saveGame: this.saveGame,
                 quitGame: this.quitGame
               }
@@ -64,16 +67,16 @@ var Index = React.createClass({
     );
   },
   selectGame: function(id) {
-    this.saveGame(this.props.games[0], this.state);
     this.setState({
       idSelected: id || 0
     })
   },
-  startGame: function(id, players) {
+  startGame: function(id, players, turns) {
     this.setState({
       idSelected: 0,
       idPlaying: id,
-      players: players
+      players: players,
+      turns: turns
     })
   },
   saveGame: function(game, gameState) {
@@ -90,10 +93,10 @@ var Index = React.createClass({
       },
       success: function(response) {
         this.setState({
-          alert: response.message
+          alert: game.title + response.message
         });
       }.bind(this),
-      error: function() {
+      error: function(jqXHR, textStatus, errorThrown) {
         this.setState({
           alert: game.title + ' save failed!'
         });
