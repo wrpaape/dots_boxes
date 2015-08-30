@@ -73,7 +73,8 @@ var Show = React.createClass({
         players['player' + i] = {
           token: i,
           turn: turn++,
-          score: startScore
+          score: startScore,
+          handicap: 0
         }
       }
       if (i <= numComputers) {
@@ -81,6 +82,7 @@ var Show = React.createClass({
           token: -i,
           turn: turn++,
           score: startScore,
+          handicap: 0,
           difficulty: 'normal'
         }
       }
@@ -95,7 +97,10 @@ var Show = React.createClass({
       var componentName = window[button.charAt(0).toUpperCase() + button.slice(1)];
       var props = buttons[button];
       var component = <div />;
-      var callBack = function() { return; };
+      var callBack = {
+        func: function() { return; },
+        args: []
+      };
 
       Object.keys(props).forEach(function(prop) {
         switch (prop) {
@@ -135,16 +140,17 @@ var Show = React.createClass({
     var players = this.state.players;
     var turns = this.state.turns;
     var tokens = turns.map(function(name) {
-      return players.name.token;
-    }).sort();
+      return players[name].token;
+    }).concat(0).sort();
 
-    var isComputer = Object.keys(input).indexOf('difficulty') > 0;
+    var isComputer = Object.keys(input).indexOf('difficulty') !== -1;
     var token = isComputer ? tokens.shift() - 1 : tokens.pop() + 1;
     var name = input.name || isComputer ? 'computer' + -token : 'player' + token;
     var player = {
       token: token,
       turn: input.turn || turns.length,
-      score: startScore + input.handicap || startScore
+      score: startScore,
+      handicap: input.handicap || 0
     };
     if (isComputer) {
       player.difficulty = input.difficulty || 'normal';

@@ -7,20 +7,28 @@ var Players = React.createClass({
     var turns = this.props.turns;
     var buttons = {
       'add player': {
-        func: this.props.addPlayer,
-        args: [{}]
+        callBack: {
+          func: this.props.addPlayer,
+          args: [{}]
+        }
       },
       'add computer': {
-        func: this.props.addPlayer,
-        args: [{ difficulty: undefined }]
+        callBack: {
+          func: this.props.addPlayer,
+          args: [{ difficulty: undefined }]
+        }
       },
       'clear players': {
-        func: this.props.clearPlayers,
-        args: []
+        callBack: {
+          func: this.props.clearPlayers,
+          args: []
+        }
       },
       'scramble players': {
-        func: this.props.shufflePlayers,
-        args: []
+        callBack: {
+          func: this.props.shufflePlayers,
+          args: []
+        }
       }
     };
 
@@ -36,11 +44,13 @@ var Players = React.createClass({
     return(
       <div className='players-wrap'>
         <table className='players-table'>
-          <tr>
-            <th>name</th>
-            <th>handicap</th>
-          </tr>
-          { allPlayers }
+          <tbody>
+            <tr>
+              <th>name</th>
+              <th>handicap</th>
+            </tr>
+            { allPlayers }
+          </tbody>
         </table>
         { this.props.getButtons(buttons) }
       </div>
