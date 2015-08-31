@@ -12,11 +12,17 @@ var Show = React.createClass({
     Object.keys(players).forEach(function(name) {
       turns[players[name].turn] = name;
     });
+    var counts = {
+      player: numPlayers,
+      computer: numComputers,
+      total: numPlayers + numComputers
+    };
 
     return({
       buttonSelected: '',
       players: players,
-      turns: turns
+      turns: turns,
+      counts: counts
     });
   },
   render: function() {
@@ -38,7 +44,8 @@ var Show = React.createClass({
           players: players,
           turns: turns,
           getButtons: this.getButtons,
-          addPlayer: this.addOrUpdatePlayer,
+          addPlayer: this.addPlayer,
+          updatePlayer: this.updatePlayer,
           removePlayer: this.removePlayer,
           clearPlayers: this.clearPlayers,
           shufflePlayers: this.shufflePlayers
@@ -136,35 +143,32 @@ var Show = React.createClass({
 
     callBack.func.apply(this, callBack.args);
   },
-  addOrUpdatePlayer: function(input) {
-    var players = this.state.players;
-    var name = input.name;
-
-    if (Object.keys(players).indexOf(name) !== -1) {
-      this.props.setAlert.bind(this, name + ' is already taken');
+  addPlayer: function(isComputer) {
+    var counts = this.state.counts;
+    var spec = this.props.game.spec;
+    var tooMany = Object.keys(counts).some(function(type) {
+      var limit = spec[type].max;
+      if (counts[type] >= limit) {
+        this.props.setAlert(type + ' limit (' + limit + ') reached, cannot add more');
+        return true;
+      }
+    }.bind(this));
+    if (tooMany) {
       return;
     }
-
-    var spec = this.props.game.spec;
-    var startScore = spec.score;
+    counts.total++;
+    var players = this.state.players;
     var turns = this.state.turns;
-    var tokens = turns.map(function(name) {
-      return players[name].token;
-    }).concat(0).sort(function(a, b) {
-      return a - b;
-    });
-
-    var isComputer = Object.keys(input).indexOf('difficulty') !== -1;
-    var token = isComputer ? tokens.shift() - 1 : tokens.pop() + 1;
-    name = name || isComputer ? 'computer' + -token : 'player' + token;
+    var token = isComputer ? -counts.computer++ - 1 : counts.player++ + 1;
+    var name = isComputer ? 'computer' + -token : 'player' + token;
     var player = {
       token: token,
-      turn: input.turn || turns.length,
-      score: startScore,
-      handicap: input.handicap || 0
+      turn: turns.length,
+      score: spec.score,
+      handicap: 0
     };
     if (isComputer) {
-      player.difficulty = input.difficulty || 'normal';
+      player.difficulty = 'normal';
     }
 
     players[name] = player;
@@ -172,13 +176,32 @@ var Show = React.createClass({
 
     this.setState({
       players: players,
-      turns: turns
+      turns: turns,
+      counts: counts
     });
+  },
+  updatePlayer: function(name, attr, newVal) {
+    switch (attr) {
+      case 'name':
+      case 'turn':
+      case 'handicap':
+    }
+
+
+    var players = this.state.players;
+    if (turns.indexOf(name) !== -1) {
+      this.props.setAlert.bind(this, name + ' is already taken');
+      return;
+    }
   },
   removePlayer: function(name) {
     var players = this.state.players;
     var turns = this.state.turns;
-    var removedTurn = players[name].turn;
+    var counts = this.state.counts;
+    var player = players[name];
+    var removedTurn = player.turn;
+    counts.total--;
+    player.token > 0 ? counts.player-- : counts.computer--;
 
     turns.splice(removedTurn, 1);
     turns.slice(removedTurn).forEach(function(name, turn) {
@@ -188,7 +211,8 @@ var Show = React.createClass({
 
     this.setState({
       players: players,
-      turns: turns
+      turns: turns,
+      counts: counts
     });
   },
   clearPlayers: function() {
@@ -217,5 +241,12 @@ var Show = React.createClass({
       players: players,
       turns: turns
     });
+  },
+  updateTurns: function(name, newTurn) {
+
+    this.setState({
+      players: players,
+      turns: turns
+    })
   }
 });

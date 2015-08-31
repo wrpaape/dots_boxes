@@ -6,6 +6,7 @@ var Players = React.createClass({
     var players = this.props.players;
     var turns = this.props.turns;
     var addPlayer = this.props.addPlayer;
+    var updatePlayer = this.props.updatePlayer;
     var removePlayer = this.props.removePlayer;
     var clearPlayers = this.props.clearPlayers;
     var shufflePlayers = this.props.shufflePlayers;
@@ -14,14 +15,14 @@ var Players = React.createClass({
         callBack: {
           only: true,
           func: addPlayer,
-          args: [{}]
+          args: [false]
         }
       },
       'add computer': {
         callBack: {
           only: true,
           func: addPlayer,
-          args: [{ difficulty: undefined }]
+          args: [true]
         }
       },
       'clear players': {
@@ -41,11 +42,6 @@ var Players = React.createClass({
     };
 
     var headers = ['name', 'turn', 'handicap'];
-    // if (this.areComputers()) {
-    //   headers.push('difficulty');
-    // }
-
-
     var ths = headers.map(function(header) {
       return <th key={ header }>{ header }</th>;
     });
@@ -62,7 +58,7 @@ var Players = React.createClass({
               name: name,
               attr: attr,
               val: player[attr],
-              updatePlayer: addPlayer,
+              updatePlayer: updatePlayer,
             }
           ));
         }
@@ -84,13 +80,5 @@ var Players = React.createClass({
         { this.props.getButtons(buttons) }
       </div>
     );
-  },
-  areComputers: function() {
-    var players = this.state.players;
-    var areComputers = false;
-      Object.keys(players).some(function(name) {
-        return areComputers = players[name].token > 0 ? true : false;
-      });
-    return areComputers;
   }
 });

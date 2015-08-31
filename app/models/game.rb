@@ -42,8 +42,11 @@ class Game < ActiveRecord::Base
           ],
           except: [
             :id,
-            :game_id
-          ]
+            :game_id,
+            :min,
+            :max
+          ],
+          methods: :total
         }
       },
       methods: [

@@ -92,10 +92,10 @@ var Index = React.createClass({
         state: gameState
       },
       success: function(response) {
-        this.setAlert.bind(this, game.title + response.message);
+        this.setAlert(game.title + response.message);
       }.bind(this),
       error: function(jqXHR, textStatus, errorThrown) {
-        this.setAlert.bind(this, game.title + ' save failed!');
+        this.setAlert(game.title + ' save failed!');
       }.bind(this)
     });
   },
