@@ -38,7 +38,7 @@ var Show = React.createClass({
           players: players,
           turns: turns,
           getButtons: this.getButtons,
-          addPlayer: this.addPlayer,
+          addPlayer: this.addOrUpdatePlayer,
           removePlayer: this.removePlayer,
           clearPlayers: this.clearPlayers,
           shufflePlayers: this.shufflePlayers
@@ -71,6 +71,7 @@ var Show = React.createClass({
     for(var i = 1; i <= numBigger; i++) {
       if (i <= numPlayers) {
         players['player' + i] = {
+          name: 'player' + i,
           token: i,
           turn: turn++,
           score: startScore,
@@ -79,6 +80,7 @@ var Show = React.createClass({
       }
       if (i <= numComputers) {
         players['computer' + i] = {
+          name: 'computer' + i,
           token: -i,
           turn: turn++,
           score: startScore,
@@ -128,25 +130,37 @@ var Show = React.createClass({
   selectButton: function(button, callBack) {
     var lastButton = this.state.buttonSelected;
 
-    this.setState({
-      buttonSelected: button === lastButton ? '' : button
-    });
+    if (!callBack.only) {
+      this.setState({
+        buttonSelected: button === lastButton ? '' : button
+      });
+    }
 
     callBack.func.apply(this, callBack.args);
   },
-  addPlayer: function(input) {
+  addOrUpdatePlayer: function(input) {
+    var players = this.state.players;
+    var name = input.name;
+
+    if (Object.keys(players).indexOf(name) !== -1) {
+      this.props.setAlert.bind(this, name + ' is already taken');
+      return;
+    }
+
     var spec = this.props.game.spec;
     var startScore = spec.score;
-    var players = this.state.players;
     var turns = this.state.turns;
     var tokens = turns.map(function(name) {
       return players[name].token;
-    }).concat(0).sort();
+    }).concat(0).sort(function(a, b) {
+      return a - b;
+    });
 
     var isComputer = Object.keys(input).indexOf('difficulty') !== -1;
     var token = isComputer ? tokens.shift() - 1 : tokens.pop() + 1;
-    var name = input.name || isComputer ? 'computer' + -token : 'player' + token;
+    name = name || isComputer ? 'computer' + -token : 'player' + token;
     var player = {
+      name: name,
       token: token,
       turn: input.turn || turns.length,
       score: startScore,

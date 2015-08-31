@@ -29,7 +29,7 @@ var Index = React.createClass({
             { game.title }
           </div>
           <div className={ 'selected-game ' + (idSelected === id) }>
-            <Show game={ game } goBack={ this.selectGame } startGame={ this.startGame } />
+            <Show game={ game } goBack={ this.selectGame } startGame={ this.startGame } setAlert={ this.setAlert } />
           </div>
         </div>
       );
@@ -92,14 +92,10 @@ var Index = React.createClass({
         state: gameState
       },
       success: function(response) {
-        this.setState({
-          alert: game.title + response.message
-        });
+        this.setAlert.bind(this, game.title + response.message);
       }.bind(this),
       error: function(jqXHR, textStatus, errorThrown) {
-        this.setState({
-          alert: game.title + ' save failed!'
-        });
+        this.setAlert.bind(this, game.title + ' save failed!');
       }.bind(this)
     });
   },
@@ -107,6 +103,11 @@ var Index = React.createClass({
     this.setState({
       idPlaying: 0,
       players: {}
+    })
+  },
+  setAlert: function(alert) {
+    this.setState({
+      alert: alert
     })
   }
 });
