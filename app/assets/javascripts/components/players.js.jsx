@@ -6,6 +6,7 @@ var Players = React.createClass({
     var players = this.props.players;
     var turns = this.props.turns;
     var addPlayer = this.props.addPlayer;
+    var removePlayer = this.props.removePlayer;
     var clearPlayers = this.props.clearPlayers;
     var shufflePlayers = this.props.shufflePlayers;
     var buttons = {
@@ -51,15 +52,24 @@ var Players = React.createClass({
 
     var playersRows = turns.map(function(name) {
       var player = players[name];
-      var tds = [];
-      Object.keys(player).forEach(function(attr) {
+      var tds = [<td key={ 'remove-' + name } onClick={ removePlayer.bind(null, name) }>X</td>];
+      Object.keys(player).concat('name').forEach(function(attr) {
         if (headers.concat('difficulty').indexOf(attr) !== -1) {
-          tds.push(<PlayerInput key={ name + '-' + attr } attr={ attr } val={ player[attr] } updatePlayer={ addPlayer } />);
+          tds.push(React.createElement(
+            window[attr.charAt(0).toUpperCase() + attr.slice(1)],
+            {
+              key: name + '-' + attr,
+              name: name,
+              attr: attr,
+              val: player[attr],
+              updatePlayer: addPlayer,
+            }
+          ));
         }
       });
 
       return <tr key={ name + '-row' }>{ tds }</tr>;
-    });
+    }.bind(this));
 
     return(
       <div className='players-wrap'>

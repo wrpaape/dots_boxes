@@ -71,7 +71,6 @@ var Show = React.createClass({
     for(var i = 1; i <= numBigger; i++) {
       if (i <= numPlayers) {
         players['player' + i] = {
-          name: 'player' + i,
           token: i,
           turn: turn++,
           score: startScore,
@@ -80,7 +79,6 @@ var Show = React.createClass({
       }
       if (i <= numComputers) {
         players['computer' + i] = {
-          name: 'computer' + i,
           token: -i,
           turn: turn++,
           score: startScore,
@@ -160,7 +158,6 @@ var Show = React.createClass({
     var token = isComputer ? tokens.shift() - 1 : tokens.pop() + 1;
     name = name || isComputer ? 'computer' + -token : 'player' + token;
     var player = {
-      name: name,
       token: token,
       turn: input.turn || turns.length,
       score: startScore,
@@ -181,8 +178,12 @@ var Show = React.createClass({
   removePlayer: function(name) {
     var players = this.state.players;
     var turns = this.state.turns;
+    var removedTurn = players[name].turn;
 
-    turns.splice(players[name].turn, 1);
+    turns.splice(removedTurn, 1);
+    turns.slice(removedTurn).forEach(function(name, turn) {
+      players[name].turn = turn;
+    });
     delete(players[name]);
 
     this.setState({
