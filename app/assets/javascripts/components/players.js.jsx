@@ -50,20 +50,20 @@ var Players = React.createClass({
     var playersRows = turns.map(function(name, i) {
       var player = players[name];
       var tds = [<td key={ 'remove-' + i } onClick={ removePlayer.bind(null, name) }>X</td>];
-      Object.keys(player).concat('name').forEach(function(attr, j) {
+      ['name'].concat(Object.keys(player)).forEach(function(attr, j) {
         if (headers.concat('difficulty').indexOf(attr) !== -1) {
           var capAttr = attr.charAt(0).toUpperCase() + attr.slice(1);
           var childProps = {
-            key: j + '-' + attr,
             name: name,
             updatePlayer: parentProps['update' + capAttr]
           };
           childProps[attr] = player[attr] || name;
 
-          tds.push(React.createElement(
-            window[capAttr],
-            childProps
-          ));
+          tds.push(
+            <td key={ j + '-' + attr }>
+              { React.createElement(window[capAttr], childProps) }
+            </td>
+          );
         }
       });
 

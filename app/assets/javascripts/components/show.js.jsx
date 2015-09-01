@@ -206,7 +206,12 @@ var Show = React.createClass({
   clearPlayers: function() {
     this.setState({
       players: {},
-      turns: []
+      turns: [],
+      counts: {
+        player: 0,
+        computer: 0,
+        total: 0
+      }
     });
   },
   shufflePlayers: function() {

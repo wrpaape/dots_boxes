@@ -7,6 +7,11 @@ var Name = React.createClass({
       name: this.props.name
     });
   },
+  componentWillReceiveProps: function(nextProps) {
+    this.setState({
+      name: nextProps.name
+    });
+  },
   render: function() {
     return(
       <input type='text' name='input' value={ this.state.name } onChange={ this.updateName } onKeyUp={ this.submitName } />
