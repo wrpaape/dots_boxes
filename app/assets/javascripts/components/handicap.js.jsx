@@ -24,7 +24,7 @@ var Handicap = React.createClass({
   },
   submitHandicap: function(event) {
     if (event.keyCode === 13) {
-      this.props.updatePlayer(this.props.name, this.state.handicap);
+      this.props.updatePlayer(this.props.name, parseInt(this.state.handicap));
     }
   }
 });

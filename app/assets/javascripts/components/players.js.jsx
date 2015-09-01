@@ -40,7 +40,7 @@ var Players = React.createClass({
       }
     };
 
-    var headers = ['name', 'turn', 'handicap'];
+    var headers = ['remove', 'name', 'turn', 'handicap'];
     var ths = headers.map(function(header) {
       return <th key={ header }>{ header }</th>;
     });
@@ -58,7 +58,7 @@ var Players = React.createClass({
             updatePlayer: parentProps['update' + capAttr]
           };
           if (attr !== 'name') {
-            childProps[attr] = player[attr];
+            childProps[attr] = attr === 'difficulty' ? { level: player[attr], levels: parentProps.levels } : player[attr];
           }
 
           tds.push(

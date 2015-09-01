@@ -37,7 +37,7 @@ var Show = React.createClass({
   },
   render: function() {
     var game = this.props.game;
-    var spec = game.spec;
+    var levels = game.spec.computer.levels;
     var stopGame = this.props.stopGame;
     var players = this.state.players;
     var turns = this.state.turns;
@@ -53,6 +53,7 @@ var Show = React.createClass({
         props: {
           players: players,
           turns: turns,
+          levels: levels,
           getButtons: this.getButtons,
           addPlayer: this.addPlayer,
           removePlayer: this.removePlayer,
@@ -276,6 +277,8 @@ var Show = React.createClass({
     var turns = this.state.turns;
     if (turns.indexOf(name) === newTurn) {
       return;
+    } else if (newTurn < 0) {
+      newTurn = 0;
     } else if (newTurn >= turns.length) {
       newTurn = turns.length - 1;
     }
@@ -320,13 +323,14 @@ var Show = React.createClass({
     }
 
     var players = this.state.players;
-    console.log(players);
-    console.log(name);
     players[name].handicap = newHandicap;
 
     this.setState({
       players: players
     });
+  },
+  updateDifficulty: function(newDifficulty) {
+
   },
   updateBoard: function(newBoard) {
     var setAlert = this.props.setAlert;
