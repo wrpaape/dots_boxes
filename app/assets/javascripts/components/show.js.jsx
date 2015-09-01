@@ -297,22 +297,36 @@ var Show = React.createClass({
     });
   },
   updateHandicap: function(name, newHandicap) {
-    var limit = this.props.spec.score.limit;
-    var func = limit.func;
-    var args = limit.args;
-    var player = this
-    var limitFunc = new Function(limit, limit.pop());
-    var failed = limitFunc.apply(this, args.concat(newHandicap));
-    if (failed) {
-      this.props.setAlert(failed);
-    } else {
-      var players = this.state.players;
-      players[name].handicap = newHandicap;
+    var limit = this.props.game.spec.score.limit;
+    if (limit) {
+      var func = limit.func;
+      var args = limit.args;
+      var funcArgs = [], inputArgs = [];
+      args.forEach(function(arg, i) {
+        funcArgs.push(arg.name);
+        var inputArg = this;
+        arg.path.forEach(function(step) {
+          inputArg = inputArg[step];
+        });
+        inputArgs.push(inputArg);
+      }.bind(this));
 
-      this.setState({
-        players: players
-      });
+      var limitFunc = new Function(funcArgs.concat('handicap'), func);
+      var failed = limitFunc.apply(this, inputArgs.concat(newHandicap));
+      if (failed) {
+        this.props.setAlert(failed);
+        return;
+      }
     }
+
+    var players = this.state.players;
+    console.log(players);
+    console.log(name);
+    players[name].handicap = newHandicap;
+
+    this.setState({
+      players: players
+    });
   },
   updateBoard: function(newBoard) {
     var setAlert = this.props.setAlert;
