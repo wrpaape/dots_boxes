@@ -9,7 +9,7 @@ var Name = React.createClass({
   },
   render: function() {
     return(
-      <input type='text' name='input' value={ this.state.name } onChange={ this.updateName } onKeyUp={ this.submit } />
+      <input type='text' name='input' value={ this.state.name } onChange={ this.updateName } onKeyUp={ this.submitName } />
     );
   },
   updateName: function(event) {
@@ -17,7 +17,7 @@ var Name = React.createClass({
       name: event.target.value
     });
   },
-  submit: function(event) {
+  submitName: function(event) {
     if (event.keyCode === 13) {
       this.props.updatePlayer(this.props.name, this.state.name);
     }

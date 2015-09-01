@@ -47,14 +47,14 @@ var Players = React.createClass({
     var headerRow = [<tr key='header-row'>{ ths }</tr>];
 
     var parentProps = this.props;
-    var playersRows = turns.map(function(name) {
+    var playersRows = turns.map(function(name, i) {
       var player = players[name];
-      var tds = [<td key={ 'remove-' + name } onClick={ removePlayer.bind(null, name) }>X</td>];
-      Object.keys(player).concat('name').forEach(function(attr) {
+      var tds = [<td key={ 'remove-' + i } onClick={ removePlayer.bind(null, name) }>X</td>];
+      Object.keys(player).concat('name').forEach(function(attr, j) {
         if (headers.concat('difficulty').indexOf(attr) !== -1) {
           var capAttr = attr.charAt(0).toUpperCase() + attr.slice(1);
           var childProps = {
-            key: name + '-' + attr,
+            key: j + '-' + attr,
             name: name,
             updatePlayer: parentProps['update' + capAttr]
           };
@@ -67,7 +67,7 @@ var Players = React.createClass({
         }
       });
 
-      return <tr key={ name + '-row' }>{ tds }</tr>;
+      return <tr key={ 'row-' + i }>{ tds }</tr>;
     });
 
     return(

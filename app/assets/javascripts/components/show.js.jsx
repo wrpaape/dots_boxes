@@ -235,7 +235,7 @@ var Show = React.createClass({
     if (newName === oldName) {
       return;
     } else if (turns.indexOf(newName) !== -1) {
-      this.props.setAlert(newName + ' is already taken');
+      this.props.setAlert('\'' + newName + '\' is already taken');
       return;
     }
 
