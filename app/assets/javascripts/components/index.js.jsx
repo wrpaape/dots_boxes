@@ -8,10 +8,7 @@ var Index = React.createClass({
       idPlaying: 0,
       players: {},
       turns: [],
-      alert: {
-        message: this.props.userId ? 'welcome' : 'welcome back',
-        toggle: false
-      }
+      alert: <Alert key='true' message={ this.props.userId ? 'welcome' : 'welcome back' } />
     });
   },
   render: function() {
@@ -57,7 +54,7 @@ var Index = React.createClass({
 
     return(
       <div className='index-wrap'>
-        <Alert message={ alert.message } toggle={ alert.toggle } />
+        { alert }
         <div className={ 'index ' + (idPlaying === 0) }>
           { index }
         </div>
@@ -106,12 +103,9 @@ var Index = React.createClass({
       players: {}
     })
   },
-  setAlert: function(message, toggleOff) {
+  setAlert: function(message) {
     this.setState({
-      alert: {
-        message: message,
-        toggle: !toggleOff
-      }
+      alert: <Alert key={ !JSON.parse(this.state.alert.key) } message={ message } />
     })
   }
 });
