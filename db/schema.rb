@@ -16,6 +16,11 @@ ActiveRecord::Schema.define(version: 20150829184828) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "args", force: :cascade do |t|
+    t.string  "name"
+    t.integer "limit_id"
+  end
+
   create_table "dimensions", force: :cascade do |t|
     t.string  "type"
     t.integer "default"
@@ -35,6 +40,11 @@ ActiveRecord::Schema.define(version: 20150829184828) do
     t.integer "spec_id"
   end
 
+  create_table "limits", force: :cascade do |t|
+    t.string  "func"
+    t.integer "score_id"
+  end
+
   create_table "players", force: :cascade do |t|
     t.integer "default"
     t.integer "min"
@@ -51,11 +61,18 @@ ActiveRecord::Schema.define(version: 20150829184828) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "scores", force: :cascade do |t|
+    t.integer "default"
+    t.integer "spec_id"
+  end
+
   create_table "specs", force: :cascade do |t|
-    t.integer "score"
-    t.integer "min"
-    t.integer "max"
     t.integer "game_id"
+  end
+
+  create_table "steps", force: :cascade do |t|
+    t.string  "name"
+    t.integer "arg_id"
   end
 
   create_table "users", force: :cascade do |t|

@@ -1,10 +1,12 @@
 class CreateSpecTables < ActiveRecord::Migration
   def change
     create_table :specs do |t|
-      t.integer :score
-      t.integer :min
-      t.integer :max
       t.belongs_to :game
+    end
+
+    create_table :scores do |t|
+      t.integer :default
+      t.belongs_to :spec
     end
 
     create_table :players do |t|
@@ -26,6 +28,21 @@ class CreateSpecTables < ActiveRecord::Migration
       t.integer :min
       t.integer :max
       t.belongs_to :layout
+    end
+
+    create_table :limits do |t|
+      t.string :func
+      t.belongs_to :score
+    end
+
+    create_table :args do |t|
+      t.string :name
+      t.belongs_to :limit
+    end
+
+    create_table :steps do |t|
+      t.string :name
+      t.belongs_to :arg
     end
   end
 end

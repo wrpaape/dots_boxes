@@ -24,17 +24,17 @@ var Players = React.createClass({
           args: [true]
         }
       },
+      'shuffle players': {
+        callBack: {
+          only: true,
+          func: shufflePlayers,
+          args: []
+        }
+      },
       'clear players': {
         callBack: {
           only: true,
           func: clearPlayers,
-          args: []
-        }
-      },
-      'scramble players': {
-        callBack: {
-          only: true,
-          func: shufflePlayers,
           args: []
         }
       }

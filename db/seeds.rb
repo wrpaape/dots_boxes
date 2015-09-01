@@ -23,15 +23,84 @@ Starting with an empty grid of dots, players take turns, adding a single horizon
 A player who completes the fourth side of a 1×1 box earns one point and takes another turn.
 The game ends when no more lines can be placed.
 The winner of the game is the player with the most points.
-"""[1..-1].gsub!("\n", "  "),
+"""[1..-1].gsub("\n", "  "),
       component: "DotsBoxes",
       children: [
         {
           "Spec" => {
-            min: 2,
-            max: 10,
-            score: 0,
             children: [
+              {
+                "Score" => {
+                  default: 0,
+                  children: [
+                    "Limit" => {
+                      func:
+"""
+var limit = rows * columns;
+if(handicap > limit) {
+  return 'handicap must be <= ' + limit;
+} else if (handicap < -limit) {
+  return 'handicap must be >= -' + limit;
+} else {
+  return false;
+}
+""".delete("\n"),
+                      children: [
+                        {
+                          "Arg" => {
+                            name: "rows",
+                            children: [
+                              {
+                                "Step" => {
+                                  name: "state"
+                                }
+                              },
+                              {
+                                "Step" => {
+                                  name: "board"
+                                }
+                              },
+                              {
+                                "Step" => {
+                                  name: "rows"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "Arg" => {
+                            name: "columns",
+                            children: [
+                              {
+                                "Step" => {
+                                  name: "state"
+                                }
+                              },
+                              {
+                                "Step" => {
+                                  name: "board"
+                                }
+                              },
+                              {
+                                "Step" => {
+                                  name: "columns"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "Player" => {
+                  min: 2,
+                  max: 10
+                }
+              },
               {
                 "Player" => {
                   default: 1,

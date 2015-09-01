@@ -6,7 +6,7 @@ var Show = React.createClass({
     var spec = this.props.game.spec;
     var numPlayers = spec.player.default;
     var numComputers = spec.computer.default;
-    var startScore = spec.score;
+    var startScore = spec.score.default;
     var players = this.getDefaultPlayers(numPlayers, numComputers, startScore);
     var turns = [];
     Object.keys(players).forEach(function(name) {
@@ -297,12 +297,22 @@ var Show = React.createClass({
     });
   },
   updateHandicap: function(name, newHandicap) {
-    var players = this.state.players;
-    players[name].handicap = newHandicap;
+    var limit = this.props.spec.score.limit;
+    var func = limit.func;
+    var args = limit.args;
+    var player = this
+    var limitFunc = new Function(limit, limit.pop());
+    var failed = limitFunc.apply(this, args.concat(newHandicap));
+    if (failed) {
+      this.props.setAlert(failed);
+    } else {
+      var players = this.state.players;
+      players[name].handicap = newHandicap;
 
-    this.setState({
-      players: players
-    });
+      this.setState({
+        players: players
+      });
+    }
   },
   updateBoard: function(newBoard) {
     var setAlert = this.props.setAlert;

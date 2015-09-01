@@ -11,6 +11,38 @@ class Game < ActiveRecord::Base
         spec: {
           include: [
             {
+              score: {
+                include: {
+                  limit: {
+                    include: {
+                      args: {
+                        only: :name,
+                        methods: :path
+                      }
+                    },
+                    except: [
+                      :id,
+                      :score_id
+                    ]
+                  }
+                },
+                except: [
+                  :id,
+                  :spec_id
+                ]
+              }
+            },
+            {
+              total: {
+                except: [
+                  :id,
+                  :spec_id,
+                  :default,
+                  :levels
+                ]
+              }
+            },
+            {
               player: {
                 except: [
                   :id,
@@ -45,8 +77,7 @@ class Game < ActiveRecord::Base
             :game_id,
             :min,
             :max
-          ],
-          methods: :total
+          ]
         }
       },
       methods: [
@@ -57,7 +88,7 @@ class Game < ActiveRecord::Base
   end
 
   def state
-    current_save.state
+    current_save ? current_save.state : saves.create(user_id: current_user.id).state
   end
 
   def saveURL
