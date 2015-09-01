@@ -13,9 +13,16 @@ var Turn = React.createClass({
     });
   },
   render: function() {
+    var turn = this.state.turn;
     return(
-      <input type='text' value={ this.state.turn } onChange={ this.updateTurn } onKeyUp={ this.submitTurn } />
+      <label>
+        <input type='text' value={ turn } onChange={ this.updateTurn } onKeyUp={ this.submitTurn } />
+        { this.getOrdinal(turn) }
+      </label>
     );
+  },
+  getOrdinal: function(turn) {
+  return ([,'st','nd','rd'][~~(turn / 10 % 10) - 1 ? turn % 10 : 0 ] || 'th');
   },
   updateTurn: function(event) {
     this.setState({
@@ -24,7 +31,7 @@ var Turn = React.createClass({
   },
   submitTurn: function(event) {
     if (event.keyCode === 13) {
-      this.props.updatePlayer(this.props.name, parseInt(this.state.turn) - 1);
+      this.props.updatePlayer(this.props.name, this.state.turn - 1);
     }
   }
 });
