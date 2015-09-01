@@ -17,13 +17,23 @@ var Show = React.createClass({
       computer: numComputers,
       total: numPlayers + numComputers
     };
-
-    return({
+    var initialState = {
       buttonSelected: '',
       players: players,
       turns: turns,
-      counts: counts
-    });
+      counts: counts,
+    };
+
+    var dimensions = spec.layout.dimensions;
+    if (dimensions) {
+      var board = {};
+      Object.keys(dimensions).forEach(function(dim) {
+        board[dim] = dimensions[dim].default;
+      });
+      initialState.board = board;
+    }
+
+    return initialState;
   },
   render: function() {
     var game = this.props.game;
@@ -31,6 +41,7 @@ var Show = React.createClass({
     var stopGame = this.props.stopGame;
     var players = this.state.players;
     var turns = this.state.turns;
+    var board = this.state.board;
 
     var buttons = {
       'rules': {
@@ -40,7 +51,6 @@ var Show = React.createClass({
       },
       'players': {
         props: {
-          spec: spec,
           players: players,
           turns: turns,
           getButtons: this.getButtons,
@@ -52,21 +62,28 @@ var Show = React.createClass({
           updateTurn: this.updateTurn,
           updateHandicap: this.updateHandicap
         }
-      },
-      'play': {
-        callBack: {
-          func: this.props.startGame,
-          args: [game.id, players, turns]
-        }
-      },
-      'back': {
-        callBack: {
-          func: this.props.goBack,
-          args: []
-        }
       }
     };
-
+    if (board) {
+      buttons.board = {
+        props: {
+          board: board,
+          updateBoard: this.updateBoard
+        }
+      };
+    }
+    buttons.play = {
+      callBack: {
+        func: this.props.startGame,
+        args: [game.id, players, turns]
+      }
+    };
+    buttons.back = {
+      callBack: {
+        func: this.props.goBack,
+        args: []
+      }
+    };
     return(
       <div className='show-wrap'>
         { this.getButtons(buttons) }
@@ -286,5 +303,26 @@ var Show = React.createClass({
     this.setState({
       players: players
     });
+  },
+  updateBoard: function(newBoard) {
+    var setAlert = this.props.setAlert;
+    var dimensions = this.props.spec.layout.dimensions;
+    var invalidDims = Object.keys(dimensions).some(function(dim) {
+      var minDim = dimensions[dim].min;
+      var maxDim = dimensions[dim].max;
+      if (newBoard[dim] < minDim) {
+        setAlert('not enough ' + dim + ' (min ' + minDim + ')');
+        return true;
+      } else if (newBoard[dim] > maxDim) {
+        setAlert('too many ' + dim + ' (max ' + maxDim + ')');
+        return true;
+      }
+    });
+
+    if (!invalidDims) {
+      this.setState({
+        board: newBoard
+      });
+    }
   }
 });

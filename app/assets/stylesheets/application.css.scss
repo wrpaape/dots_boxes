@@ -1,19 +1,37 @@
 $player-color: blue;
 $computer-color: red;
 
-@keyframes fade-out {
+@keyframes fade-out1 {
   to {
     opacity: 0;
   }
+}
+
+@keyframes fade-out2 {
+  to {
+    opacity: 0;
+  }
+}
+
+@mixin fade-out1 {
+  animation: fade-out1 1s ease-in 1s forwards;
+}
+
+@mixin fade-out2 {
+  animation: fade-out2 1s ease-in 1s forwards;
 }
 
 .false {
   display: none;
 }
 
-
 .alert {
-  animation: fade-out 1s ease-in 1s forwards;
+  &.toggle-true {
+    @include fade-out1;
+  }
+  &.toggle-false {
+    @include fade-out2;
+  }
 }
 
 
