@@ -3,13 +3,12 @@
 
 var Players = React.createClass({
   render: function() {
-    var players = this.props.players;
-    var turns = this.props.turns;
     var addPlayer = this.props.addPlayer;
-    var updatePlayer = this.props.updatePlayer;
     var removePlayer = this.props.removePlayer;
     var clearPlayers = this.props.clearPlayers;
     var shufflePlayers = this.props.shufflePlayers;
+    var players = this.props.players;
+    var turns = this.props.turns;
     var buttons = {
       'add player': {
         callBack: {
@@ -45,36 +44,37 @@ var Players = React.createClass({
     var ths = headers.map(function(header) {
       return <th key={ header }>{ header }</th>;
     });
+    var headerRow = [<tr key='header-row'>{ ths }</tr>];
 
+    var parentProps = this.props;
     var playersRows = turns.map(function(name) {
       var player = players[name];
       var tds = [<td key={ 'remove-' + name } onClick={ removePlayer.bind(null, name) }>X</td>];
       Object.keys(player).concat('name').forEach(function(attr) {
         if (headers.concat('difficulty').indexOf(attr) !== -1) {
+          var capAttr = attr.charAt(0).toUpperCase() + attr.slice(1);
+          var childProps = {
+            key: name + '-' + attr,
+            name: name,
+            updatePlayer: parentProps['update' + capAttr]
+          };
+          childProps[attr] = player[attr] || name;
+
           tds.push(React.createElement(
-            window[attr.charAt(0).toUpperCase() + attr.slice(1)],
-            {
-              key: name + '-' + attr,
-              name: name,
-              attr: attr,
-              val: player[attr],
-              updatePlayer: updatePlayer,
-            }
+            window[capAttr],
+            childProps
           ));
         }
       });
 
       return <tr key={ name + '-row' }>{ tds }</tr>;
-    }.bind(this));
+    });
 
     return(
       <div className='players-wrap'>
         <table className='players-table'>
           <tbody>
-            <tr>
-              { ths }
-            </tr>
-            { playersRows }
+            { headerRow.concat(playersRows) }
           </tbody>
         </table>
         { this.props.getButtons(buttons) }

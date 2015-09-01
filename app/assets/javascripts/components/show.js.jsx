@@ -45,10 +45,12 @@ var Show = React.createClass({
           turns: turns,
           getButtons: this.getButtons,
           addPlayer: this.addPlayer,
-          updatePlayer: this.updatePlayer,
           removePlayer: this.removePlayer,
           clearPlayers: this.clearPlayers,
-          shufflePlayers: this.shufflePlayers
+          shufflePlayers: this.shufflePlayers,
+          updateName: this.updateName,
+          updateTurn: this.updateTurn,
+          updateHandicap: this.updateHandicap
         }
       },
       'play': {
@@ -120,7 +122,7 @@ var Show = React.createClass({
                 { React.createElement(componentName, props.props) }
               </div>;
         }
-      }.bind(this));
+      });
 
       return(
         <div key={ button }>
@@ -180,20 +182,6 @@ var Show = React.createClass({
       counts: counts
     });
   },
-  updatePlayer: function(name, attr, newVal) {
-    switch (attr) {
-      case 'name':
-      case 'turn':
-      case 'handicap':
-    }
-
-
-    var players = this.state.players;
-    if (turns.indexOf(name) !== -1) {
-      this.props.setAlert.bind(this, name + ' is already taken');
-      return;
-    }
-  },
   removePlayer: function(name) {
     var players = this.state.players;
     var turns = this.state.turns;
@@ -204,8 +192,8 @@ var Show = React.createClass({
     player.token > 0 ? counts.player-- : counts.computer--;
 
     turns.splice(removedTurn, 1);
-    turns.slice(removedTurn).forEach(function(name, turn) {
-      players[name].turn = turn;
+    turns.slice(removedTurn).forEach(function(name) {
+      players[name].turn--;
     });
     delete(players[name]);
 
@@ -242,11 +230,56 @@ var Show = React.createClass({
       turns: turns
     });
   },
-  updateTurns: function(name, newTurn) {
+  updateName: function(oldName, newName) {
+    var turns = this.state.turns;
+    if (newName === oldName) {
+      return;
+    } else if (turns.indexOf(newName) !== -1) {
+      this.props.setAlert(newName + ' is already taken');
+      return;
+    }
+
+    var turnIndex = turns.indexOf(oldName);
+    var players = this.state.players;
+    turns[turnIndex] = newName;
+    players[newName] = players[oldName];
+    delete(players[oldName]);
 
     this.setState({
       players: players,
       turns: turns
-    })
+    });
+  },
+  updateTurn: function(name, newTurn) {
+    var turns = this.state.turns;
+    if (turns.indexOf(name) === newTurn) {
+      return;
+    } else if (newTurn >= turns.length) {
+      newTurn = turns.length - 1;
+    }
+
+    var players = this.state.players;
+    var oldTurn = players[name].turn;
+    players[name].turn = newTurn;
+
+    turns.splice(newTurn, 0, turns.splice(oldTurn,1)[0]);
+    var turnsAffected = newTurn > oldTurn ? turns.slice(oldTurn, newTurn) : turns.slice(newTurn + 1, oldTurn + 1);
+    var shift = newTurn > oldTurn ? -1 : 1;
+    turnsAffected.forEach(function(name) {
+      players[name].turn += shift;
+    });
+
+    this.setState({
+      players: players,
+      turns: turns
+    });
+  },
+  updateHandicap: function(name, newHandicap) {
+    var players = this.state.players;
+    players[name].handicap = newHandicap;
+
+    this.setState({
+      players: players
+    });
   }
 });
