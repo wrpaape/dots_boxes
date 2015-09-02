@@ -34,9 +34,7 @@ var Show = React.createClass({
           addPlayer: this.addPlayer,
           removePlayer: this.removePlayer,
           clearPlayers: this.clearPlayers,
-          getDefaultPlayers: this.getDefault.bind(null, 'players'),
-          getDefaultTurns: this.getTurns.bind(null, 'turns'),
-          getDefaultCounts: this.getDefault.bind(null, 'counts'),
+          restoreDefaultPlayers: this.restoreDefaultPlayers,
           shufflePlayers: this.shufflePlayers,
           updateName: this.updateName,
           updateTurn: this.updateTurn,
@@ -251,11 +249,11 @@ var Show = React.createClass({
       }
     });
   },
-  restoreDefaults: function() {
-    var players = this.getDefault('players');
+  restoreDefaultPlayers: function() {
     this.setState({
-      players: players,
-      turns: this.getTurns(players)
+      players: this.getDefault('players'),
+      turns: this.getDefault('turns'),
+      counts: this.getDefault('counts')
     });
   },
   shufflePlayers: function() {

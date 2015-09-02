@@ -7,6 +7,7 @@ var Players = React.createClass({
     var addPlayer = parentProps.addPlayer;
     var removePlayer = parentProps.removePlayer;
     var clearPlayers = parentProps.clearPlayers;
+    var restoreDefaultPlayers = parentProps.restoreDefaultPlayers;
     var shufflePlayers = parentProps.shufflePlayers;
     var players = parentProps.players;
     var turns = parentProps.turns;
@@ -36,6 +37,13 @@ var Players = React.createClass({
         callBack: {
           only: true,
           func: clearPlayers,
+          args: []
+        }
+      },
+      'restore defaults': {
+        callBack: {
+          only: true,
+          func: restoreDefaultPlayers,
           args: []
         }
       }
