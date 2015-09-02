@@ -3,12 +3,13 @@
 
 var Players = React.createClass({
   render: function() {
-    var addPlayer = this.props.addPlayer;
-    var removePlayer = this.props.removePlayer;
-    var clearPlayers = this.props.clearPlayers;
-    var shufflePlayers = this.props.shufflePlayers;
-    var players = this.props.players;
-    var turns = this.props.turns;
+    var parentProps = this.props;
+    var addPlayer = parentProps.addPlayer;
+    var removePlayer = parentProps.removePlayer;
+    var clearPlayers = parentProps.clearPlayers;
+    var shufflePlayers = parentProps.shufflePlayers;
+    var players = parentProps.players;
+    var turns = parentProps.turns;
     var buttons = {
       'add player': {
         callBack: {
@@ -42,7 +43,6 @@ var Players = React.createClass({
 
     var playersTable = [<div key='players-table' />];
     if (turns.length) {
-      var parentProps = this.props;
       var playersRows = turns.map(function(name, i) {
         var player = players[name];
         var tds = [<td key={ 'remove-' + i } onClick={ removePlayer.bind(null, name) }>X</td>];
@@ -62,7 +62,7 @@ var Players = React.createClass({
           }
         });
 
-        return <tr key={ 'row-' + player.token }>{ tds }</tr>;
+        return <tr key={ 'row-' + player.token } className='player-row'>{ tds }</tr>;
       });
 
       var headers = [' ', ' ', ' ', 'handicap'];
@@ -79,7 +79,7 @@ var Players = React.createClass({
 
     return(
       <div className='players-wrap'>
-        { playersTable.concat(this.props.getButtons(buttons)) }
+        { playersTable.concat(parentProps.getButtons(buttons)) }
       </div>
     );
   }

@@ -38,9 +38,9 @@ The winner of the game is the player with the most points.
 """
 var limit = rows * columns;
 if(handicap > limit) {
-  return 'handicap must be <= ' + limit;
+  return 'handicap must be <= rows * columns (' + limit + ')';
 } else if (handicap < -limit) {
-  return 'handicap must be >= -' + limit;
+  return 'handicap must be >= -(rows * columns) (' + -limit + ')';
 } else {
   return false;
 }
