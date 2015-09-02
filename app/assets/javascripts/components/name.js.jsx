@@ -25,7 +25,7 @@ var Name = React.createClass({
   },
   submitName: function(event) {
     if (event.keyCode === 13) {
-      this.props.updatePlayer(this.props.name, this.state.name);
+      this.props.updatePlayer(this.state.name);
     }
   }
 });

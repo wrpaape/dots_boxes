@@ -31,7 +31,8 @@ var Turn = React.createClass({
   },
   submitTurn: function(event) {
     if (event.keyCode === 13) {
-      this.props.updatePlayer(this.props.name, this.state.dispTurn - 1);
+      var newTurn = this.state.dispTurn - 1;
+      newTurn || newTurn === 0 ? this.props.updatePlayer(newTurn) : this.setState({ dispTurn: (this.props.turn + 1).toString() });
     }
   }
 });

@@ -15,7 +15,15 @@ var Handicap = React.createClass({
   render: function() {
     var dispHandicap = this.state.dispHandicap;
     return(
-      <input type='text' size={ dispHandicap.length || 1 } value={ dispHandicap } onChange={ this.updateHandicap } onKeyUp={ this.submitHandicap } />
+      <div>
+        <input type='text' size={ dispHandicap.length || 1 } value={ dispHandicap } onChange={ this.updateHandicap } onKeyUp={ this.submitHandicap } />
+        <span onClick={ this.incrementHandicap.bind(this, 1) }>
+          ▲
+        </span>
+        <span onClick={ this.incrementHandicap.bind(this, -1) }>
+          ▼
+        </span>
+      </div>
     );
   },
   updateHandicap: function(event) {
@@ -25,7 +33,10 @@ var Handicap = React.createClass({
   },
   submitHandicap: function(event) {
     if (event.keyCode === 13) {
-      this.props.updatePlayer(this.props.name, this.state.dispHandicap - 0);
+      this.props.updatePlayer(this.state.dispHandicap - 0);
     }
+  },
+  incrementHandicap: function(inc) {
+    this.props.updatePlayer(this.state.dispHandicap - 0 + inc);
   }
 });

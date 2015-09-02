@@ -3,6 +3,6 @@ class Arg < ActiveRecord::Base
   belongs_to :limit
 
   def path
-    steps.map(&:name)
+    steps.pluck(:name)
   end
 end

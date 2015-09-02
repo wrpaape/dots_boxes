@@ -61,7 +61,8 @@ var Show = React.createClass({
           shufflePlayers: this.shufflePlayers,
           updateName: this.updateName,
           updateTurn: this.updateTurn,
-          updateHandicap: this.updateHandicap
+          updateHandicap: this.updateHandicap,
+          updateDifficulty: this.updateDifficulty
         }
       }
     };
@@ -329,8 +330,13 @@ var Show = React.createClass({
       players: players
     });
   },
-  updateDifficulty: function(newDifficulty) {
+  updateDifficulty: function(name, newDifficulty) {
+    var players = this.state.players;
+    players[name].difficulty = newDifficulty;
 
+    this.setState({
+      players: players
+    });
   },
   updateBoard: function(newBoard) {
     var setAlert = this.props.setAlert;
