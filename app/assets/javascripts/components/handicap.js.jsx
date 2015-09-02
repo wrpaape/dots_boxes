@@ -15,15 +15,15 @@ var Handicap = React.createClass({
   render: function() {
     var dispHandicap = this.state.dispHandicap;
     return(
-      <div>
+      <label>
         <input type='text' size={ dispHandicap.length || 1 } value={ dispHandicap } onChange={ this.updateHandicap } onKeyUp={ this.submitHandicap } />
-        <span onClick={ this.incrementHandicap.bind(this, 1) }>
+        <span className='cursor-pointer' onClick={ this.incrementHandicap.bind(this, 1) }>
           ▲
         </span>
-        <span onClick={ this.incrementHandicap.bind(this, -1) }>
+        <span className='cursor-pointer' onClick={ this.incrementHandicap.bind(this, -1) }>
           ▼
         </span>
-      </div>
+      </label>
     );
   },
   updateHandicap: function(event) {

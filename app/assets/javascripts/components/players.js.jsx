@@ -45,7 +45,7 @@ var Players = React.createClass({
     if (turns.length) {
       var playersRows = turns.map(function(name, i) {
         var player = players[name];
-        var tds = [<td key={ 'remove-' + i } onClick={ removePlayer.bind(null, name) }>X</td>];
+        var tds = [<td key={ 'remove-' + i } className='cursor-pointer' onClick={ removePlayer.bind(null, name) }>X</td>];
         ['turn', 'name', 'handicap', 'difficulty'].forEach(function(attr) {
           if (player[attr] !== undefined || attr === 'name') {
             var capAttr = attr.charAt(0).toUpperCase() + attr.slice(1);

@@ -3,37 +3,13 @@
 
 var Show = React.createClass({
   getInitialState: function() {
-    var spec = this.props.game.spec;
-    var numPlayers = spec.player.default;
-    var numComputers = spec.computer.default;
-    var startScore = spec.score.default;
-    var players = this.getDefaultPlayers(numPlayers, numComputers, startScore);
-    var turns = [];
-    Object.keys(players).forEach(function(name) {
-      turns[players[name].turn] = name;
-    });
-    var counts = {
-      player: numPlayers,
-      computer: numComputers,
-      total: numPlayers + numComputers
-    };
-    var initialState = {
+    return({
       buttonSelected: '',
-      players: players,
-      turns: turns,
-      counts: counts,
-    };
-
-    var dimensions = spec.layout.dimensions;
-    if (dimensions) {
-      var board = {};
-      Object.keys(dimensions).forEach(function(dim) {
-        board[dim] = dimensions[dim].default;
-      });
-      initialState.board = board;
-    }
-
-    return initialState;
+      players: this.getDefault('players'),
+      turns: this.getDefault('turns'),
+      counts: this.getDefault('counts'),
+      board: this.getDefault('board')
+    });
   },
   render: function() {
     var game = this.props.game;
@@ -58,6 +34,9 @@ var Show = React.createClass({
           addPlayer: this.addPlayer,
           removePlayer: this.removePlayer,
           clearPlayers: this.clearPlayers,
+          getDefaultPlayers: this.getDefault.bind(null, 'players'),
+          getDefaultTurns: this.getTurns.bind(null, 'turns'),
+          getDefaultCounts: this.getDefault.bind(null, 'counts'),
           shufflePlayers: this.shufflePlayers,
           updateName: this.updateName,
           updateTurn: this.updateTurn,
@@ -70,7 +49,8 @@ var Show = React.createClass({
       buttons.board = {
         props: {
           board: board,
-          updateBoard: this.updateBoard
+          updateBoard: this.updateBoard,
+          getDefaultBoard: this.getDefault.bind(null, 'board')
         }
       };
     }
@@ -91,6 +71,36 @@ var Show = React.createClass({
         { this.getButtons(buttons) }
       </div>
     );
+  },
+  getDefault: function(returnState) {
+    var spec = this.props.game.spec;
+    var numPlayers = spec.player.default;
+    var numComputers = spec.computer.default;
+    var startScore = spec.score.default;
+
+    switch (returnState) {
+      case 'players':
+        return this.getDefaultPlayers(numPlayers, numComputers, startScore);
+        break;
+      case 'turns':
+        return this.getTurns(this.getDefault('players'));
+      case 'counts':
+        return {
+          player: numPlayers,
+          computer: numComputers,
+          total: numPlayers + numComputers
+        };
+        break;
+      case 'board':
+        var dimensions = spec.layout.dimensions;
+        if (dimensions) {
+          var board = {};
+          Object.keys(dimensions).forEach(function(dim) {
+            board[dim] = dimensions[dim].default;
+          });
+          return board;
+        }
+    }
   },
   getDefaultPlayers: function(numPlayers, numComputers, startScore) {
     var numBigger = numPlayers > numComputers ? numPlayers : numComputers;
@@ -117,6 +127,14 @@ var Show = React.createClass({
     }
 
     return players;
+  },
+  getTurns: function(players) {
+    var turns = [];
+    Object.keys(players).forEach(function(name) {
+      turns[players[name].turn] = name;
+    });
+
+    return turns;
   },
   getButtons: function(buttons) {
     var buttonSelected = this.state.buttonSelected;
@@ -145,7 +163,7 @@ var Show = React.createClass({
 
       return(
         <div key={ button }>
-          <div className={ button + '-button ' } onClick={ this.selectButton.bind(this, button, callBack) }>
+          <div className={ button + '-button cursor-pointer' } onClick={ this.selectButton.bind(this, button, callBack) }>
             { button }
           </div>
           { component }
@@ -231,6 +249,13 @@ var Show = React.createClass({
         computer: 0,
         total: 0
       }
+    });
+  },
+  restoreDefaults: function() {
+    var players = this.getDefault('players');
+    this.setState({
+      players: players,
+      turns: this.getTurns(players)
     });
   },
   shufflePlayers: function() {

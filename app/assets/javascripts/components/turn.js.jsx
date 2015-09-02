@@ -19,10 +19,10 @@ var Turn = React.createClass({
         <input type='text' size={ dispTurn.length || 1 } value={ dispTurn } onChange={ this.updateTurn } onKeyUp={ this.submitTurn } />
         { this.getOrdinal(dispTurn) }
         <span onMouseLeave={ this.submitIncrements }>
-          <span onClick={ this.incrementTurn.bind(this, 1) }>
+          <span className='cursor-pointer' onClick={ this.incrementTurn.bind(this, 1) }>
             ▲
           </span>
-          <span onClick={ this.incrementTurn.bind(this, -1) }>
+          <span className='cursor-pointer' onClick={ this.incrementTurn.bind(this, -1) }>
             ▼
           </span>
         </span>

@@ -25,7 +25,7 @@ var Index = React.createClass({
 
       index.push(
         <div key={ 'index-' + id } className='game-wrap'>
-          <div className={ 'title ' + (idSelected === 0) } onClick={ this.selectGame.bind(this, id) }>
+          <div className={ 'title ' + (idSelected === 0) + ' cursor-pointer' } onClick={ this.selectGame.bind(this, id) }>
             { game.title }
           </div>
           <div className={ 'selected-game ' + (idSelected === id) }>

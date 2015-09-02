@@ -26,6 +26,13 @@ $computer-color: red;
   @include fade-out;
 }
 
+.cursor-pointer {
+    cursor: pointer;
+    &:active {
+      color: grey;
+    }
+}
+
 .player-row {
   transition: text-shadow 1s ease-in-out;
 
