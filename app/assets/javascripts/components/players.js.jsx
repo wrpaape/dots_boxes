@@ -53,7 +53,7 @@ var Players = React.createClass({
     if (turns.length) {
       var playersRows = turns.map(function(name) {
         var player = players[name];
-        var tds = [<td key={ 'remove-' + player.token } className='cursor-pointer hover-child' onClick={ removePlayer.bind(null, name) }>X</td>];
+        var tds = [<td key={ 'remove-' + player.token } className='cursor-pointer hover-child' onClick={ removePlayer.bind(null, name) }>✘</td>];
         ['turn', 'name', 'handicap', 'difficulty'].forEach(function(attr) {
           if (player[attr] !== undefined || attr === 'name') {
             var capAttr = attr.charAt(0).toUpperCase() + attr.slice(1);
@@ -87,7 +87,7 @@ var Players = React.createClass({
 
     return(
       <div className='players-wrap'>
-        { playersTable.concat(parentProps.getButtons(buttons)) }
+      { playersTable.concat(<div key='players-buttons' className='buttons-wrap'>{ parentProps.getButtons(buttons) }</div>) }
       </div>
     );
   }

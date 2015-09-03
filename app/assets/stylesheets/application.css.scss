@@ -41,7 +41,11 @@ $computer-color: red;
 }
 
 body, body input, body select {
+  font-family: monospace;
   font-size: 20px;
+  span.hover-child {
+    font-family: consolas;
+  }
 }
 
 select {
@@ -49,9 +53,14 @@ select {
   background-color: white;
 }
 
+input {
+  border: none;
+}
+
 table {
   width: 50%;
-  text-align: center;
+  text-align: right;
+  table-layout: fixed;
   tbody tr, .hover-child {
     font-weight: bold;
     @include transition-out;
@@ -146,5 +155,16 @@ div.board {
   cursor: pointer;
   &:active {
     color: grey;
+  }
+}
+
+.rules-component{
+  padding: 50px;
+}
+
+.buttons-wrap {
+  div {
+    display: inline-block;
+    margin: 12px;
   }
 }

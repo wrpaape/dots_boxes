@@ -6,7 +6,7 @@ var Rules = React.createClass({
     var rules = this.props.rules;
 
     return (
-      <div className='rules'>
+      <div>
         { rules }
       </div>
     );

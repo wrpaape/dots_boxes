@@ -7,6 +7,11 @@ var Difficulty = React.createClass({
       level: this.props.difficulty.level
     });
   },
+  componentWillReceiveProps: function(nextProps) {
+    this.setState({
+      level: nextProps.difficulty.level
+    });
+  },
   render: function() {
     var levels = this.props.difficulty.levels;
     var level = this.state.level;
@@ -26,7 +31,7 @@ var Difficulty = React.createClass({
     });
 
     return(
-      <select className='cursor-pointer hover-child' defaultValue={ level } onChange={ this.submitDifficulty }>
+      <select className='cursor-pointer hover-child' value={ level } onChange={ this.submitDifficulty }>
         { options }
       </select>
     );
