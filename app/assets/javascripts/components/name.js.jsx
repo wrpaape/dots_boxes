@@ -15,7 +15,7 @@ var Name = React.createClass({
   render: function() {
     var name = this.state.name;
     return(
-      <input type='text' size={ name.length || 1 } value={ name } onChange={ this.updateName } onKeyUp={ this.submitName } />
+      <input type='text' size={ name.length || 1 } value={ name } className='hover-child' onChange={ this.updateName } onKeyUp={ this.submitName } />
     );
   },
   updateName: function(event) {

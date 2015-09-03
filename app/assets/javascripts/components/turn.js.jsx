@@ -16,13 +16,13 @@ var Turn = React.createClass({
     var dispTurn = this.state.dispTurn;
     return(
       <label>
-        <input type='text' size={ dispTurn.length || 1 } value={ dispTurn } onChange={ this.updateTurn } onKeyUp={ this.submitTurn } />
+        <input type='text' size={ dispTurn.length || 1 } value={ dispTurn } className='hover-child' onChange={ this.updateTurn } onKeyUp={ this.submitTurn } />
         { this.getOrdinal(dispTurn) }
         <span onMouseLeave={ this.submitIncrements }>
-          <span className='cursor-pointer' onClick={ this.incrementTurn.bind(this, 1) }>
+          <span className='cursor-pointer hover-child' onClick={ this.incrementTurn.bind(this, 1) }>
             ▲
           </span>
-          <span className='cursor-pointer' onClick={ this.incrementTurn.bind(this, -1) }>
+          <span className='cursor-pointer hover-child' onClick={ this.incrementTurn.bind(this, -1) }>
             ▼
           </span>
         </span>

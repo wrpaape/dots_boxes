@@ -25,9 +25,8 @@ var Difficulty = React.createClass({
       );
     });
 
-
     return(
-      <select className='cursor-pointer' defaultValue={ level } onChange={ this.submitDifficulty }>
+      <select className='cursor-pointer hover-child' defaultValue={ level } onChange={ this.submitDifficulty }>
         { options }
       </select>
     );

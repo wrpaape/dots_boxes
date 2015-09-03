@@ -82,6 +82,7 @@ var Show = React.createClass({
         break;
       case 'turns':
         return this.getTurns(this.getDefault('players'));
+        break;
       case 'counts':
         return {
           player: numPlayers,

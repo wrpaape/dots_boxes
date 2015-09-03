@@ -11,34 +11,57 @@ $computer-color: red;
   animation: fade-out 1s ease-in 1s forwards;
 }
 
-@mixin bold-text-shadow {
-  text-shadow: -1px -1px 0 red,
-        1px -1px 0 red,
-        -1px  1px 0 red,
-        1px  1px 0 red;
+@mixin shadow-color-hover {
+  color: blue;
+  text-shadow:
+    -1px -1px 0 red,
+    1px -1px 0 red,
+    -1px  1px 0 red,
+    1px  1px 0 red;
+  @at-root #{selector-unify(&, select)}  {
+    box-shadow:
+      -1px -1px 0 red,
+      1px -1px 0 red,
+      -1px  1px 0 red,
+      1px  1px 0 red;
+  }
 }
 
-.false {
-  display: none;
+@mixin transition-in {
+  transition: all 0.25s ease-in-out;
 }
 
-.alert {
-  @include fade-out;
+@mixin transition-out {
+  transition: all 1s ease-in-out;
 }
 
-.cursor-pointer {
-    cursor: pointer;
-    &:active {
-      color: grey;
+@mixin hover-child-focus {
+  color: green;
+  text-shadow: none;
+}
+
+body, body input, body select {
+  font-size: 20px;
+}
+
+select {
+  -webkit-appearance: menulist-button;
+  background-color: white;
+}
+
+table {
+  width: 50%;
+  text-align: center;
+  tbody tr, .hover-child {
+    font-weight: bold;
+    @include transition-out;
+    &:hover .hover-child{
+      @include shadow-color-hover;
+      @include transition-in;
+      &:hover, &:focus {
+        @include hover-child-focus;
+      }
     }
-}
-
-.player-row {
-  transition: text-shadow 1s ease-in-out;
-
-  &:hover {
-    @include bold-text-shadow;
-    transition: text-shadow 0.25s ease-in-out;
   }
 }
 
@@ -108,5 +131,20 @@ div.board {
         }
       }
     }
+  }
+}
+
+.false {
+  display: none;
+}
+
+.alert {
+  @include fade-out;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+  &:active {
+    color: grey;
   }
 }
