@@ -61,6 +61,7 @@ table {
   width: 50%;
   text-align: right;
   table-layout: fixed;
+  cursor: default;
   tbody tr, .hover-child {
     font-weight: bold;
     @include transition-out;
@@ -71,6 +72,10 @@ table {
         @include hover-child-focus;
       }
     }
+  }
+  tr :nth-child(4) {
+    text-align: center;
+    padding-left: 50px;
   }
 }
 
@@ -158,8 +163,13 @@ div.board {
   }
 }
 
-.rules-component{
+.rules-component {
   padding: 50px;
+}
+
+.dimension {
+  display: inline-block;
+  margin: 25px;
 }
 
 .buttons-wrap {

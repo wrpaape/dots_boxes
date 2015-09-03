@@ -41,29 +41,32 @@ var Show = React.createClass({
           updateHandicap: this.updateHandicap,
           updateDifficulty: this.updateDifficulty
         }
-      }
-    };
-    if (board) {
-      buttons.board = {
+      },
+      'board': {
         props: {
           board: board,
           updateBoard: this.updateBoard,
           getDefaultBoard: this.getDefault.bind(null, 'board')
         }
-      };
+      },
+      'play': {
+        callBack: {
+          func: this.props.startGame,
+          args: [game.id, players, turns]
+        }
+      },
+      'back': {
+        callBack: {
+          func: this.props.goBack,
+          args: []
+        }
+      }
+    };
+
+    if (!board) {
+      delete(buttons.board);
     }
-    buttons.play = {
-      callBack: {
-        func: this.props.startGame,
-        args: [game.id, players, turns]
-      }
-    };
-    buttons.back = {
-      callBack: {
-        func: this.props.goBack,
-        args: []
-      }
-    };
+
     return(
       <div className='show-wrap'>
         { this.getButtons(buttons) }
@@ -364,7 +367,7 @@ var Show = React.createClass({
   },
   updateBoard: function(newBoard) {
     var setAlert = this.props.setAlert;
-    var dimensions = this.props.spec.layout.dimensions;
+    var dimensions = this.props.game.spec.layout.dimensions;
     var invalidDims = Object.keys(dimensions).some(function(dim) {
       var minDim = dimensions[dim].min;
       var maxDim = dimensions[dim].max;
@@ -376,6 +379,7 @@ var Show = React.createClass({
         return true;
       }
     });
+
 
     if (!invalidDims) {
       this.setState({
