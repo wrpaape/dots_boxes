@@ -4,11 +4,19 @@ $computer-color: red;
 @keyframes fade-out {
   to {
     opacity: 0;
+    background-color: rgba(255, 255, 255, 0);
+  }
+}
+
+@keyframes hide {
+  to {
+    z-index: -1;
   }
 }
 
 @mixin fade-out {
-  animation: fade-out 1s ease-in 1s forwards;
+  animation: fade-out 1s ease-in 1s forwards,
+    hide 4s forwards;
 }
 
 @mixin shadow-color-hover {
@@ -40,6 +48,15 @@ $computer-color: red;
   text-shadow: none;
 }
 
+@mixin pop-up {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+
 body, body input, body select {
   font-family: monospace;
   font-size: 20px;
@@ -58,12 +75,12 @@ input {
 }
 
 table {
-  width: 50%;
-  text-align: right;
+  width: 100%;
   table-layout: fixed;
+  padding: 12px;
+  text-align: right;
   cursor: default;
   tbody tr, .hover-child {
-    font-weight: bold;
     @include transition-out;
     &:hover .hover-child{
       @include shadow-color-hover;
@@ -73,24 +90,32 @@ table {
       }
     }
   }
-  tr :nth-child(4) {
-    text-align: center;
-    padding-left: 50px;
+  tr {
+    &:last-child td {
+      text-align: center;
+      padding-top: 12px;
+      padding-right: 48px;
+      &:nth-child(4) {
+        padding-right: 96px;
+      }
+    }
+    th, td {
+      font-weight: normal;
+      padding-right: 96px;
+      &:nth-child(4) {
+        text-align: center;
+      }
+    }
   }
 }
 
-div.board {
+div.dots-boxes-board {
   position: relative;
   text-align: center;
   div.gameover-text {
     display: none;
     &.gameover {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      z-index: 1;
+      @include pop-up;
       display: flex;
       justify-content: center;
       flex-direction: column;
@@ -153,6 +178,11 @@ div.board {
 }
 
 .alert {
+  font-size: 24px;
+  padding: 24px;
+  background-color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  @include pop-up;
   @include fade-out;
 }
 
@@ -163,18 +193,12 @@ div.board {
   }
 }
 
-.rules-component {
-  padding: 50px;
+.component {
+  padding: 12px;
 }
 
 .dimension {
   display: inline-block;
-  margin: 25px;
-}
-
-.buttons-wrap {
-  div {
-    display: inline-block;
-    margin: 12px;
-  }
+  margin: 12px;
+  font-weight: bold;
 }

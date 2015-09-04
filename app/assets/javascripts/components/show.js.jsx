@@ -138,7 +138,7 @@ var Show = React.createClass({
 
     return turns;
   },
-  getButtons: function(buttons) {
+  getButtons: function(buttons, tableCells) {
     var buttonSelected = this.state.buttonSelected;
 
     return Object.keys(buttons).map(function(button) {
@@ -157,20 +157,21 @@ var Show = React.createClass({
             break;
           case 'props':
             component =
-              <div className={ button + '-component ' + (button === buttonSelected) }>
+              <div className={ button + ' component ' + (button === buttonSelected) }>
                 { React.createElement(componentName, props.props) }
               </div>;
         }
       });
-
-      return(
-        <div key={ button }>
-          <div className={ button + '-button cursor-pointer' } onClick={ this.selectButton.bind(this, button, callBack) }>
+      var children =
+        <div>
+          <div className={ button + ' button cursor-pointer' } onClick={ this.selectButton.bind(this, button, callBack) }>
             { button }
           </div>
           { component }
-        </div>
-      );
+        </div>;
+      var wrapType = tableCells ? 'td' : 'div';
+
+      return React.createElement(wrapType, { key: button }, children);
     }.bind(this));
   },
   selectButton: function(button, callBack) {

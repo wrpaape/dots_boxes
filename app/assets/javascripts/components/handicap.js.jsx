@@ -15,7 +15,7 @@ var Handicap = React.createClass({
   render: function() {
     var dispHandicap = this.state.dispHandicap;
     return(
-      <label>
+      <div>
         <input type='text' size={ dispHandicap.length || 1 } value={ dispHandicap } className='hover-child' onChange={ this.updateHandicap } onKeyUp={ this.submitHandicap } onBlur={ this.submitHandicap } />
         <span className='cursor-pointer hover-child' onClick={ this.incrementHandicap.bind(this, 1) }>
           ▲
@@ -23,7 +23,7 @@ var Handicap = React.createClass({
         <span className='cursor-pointer hover-child' onClick={ this.incrementHandicap.bind(this, -1) }>
           ▼
         </span>
-      </label>
+      </div>
     );
   },
   updateHandicap: function(event) {

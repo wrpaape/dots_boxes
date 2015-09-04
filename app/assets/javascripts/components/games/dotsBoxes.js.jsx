@@ -108,7 +108,7 @@ var DotsBoxes = React.createClass({
     var gameoverText = winner === 'tie' ? 'tie game' : winner + ' wins';
 
     return(
-      <div className='board' >
+      <div className='dots-boxes-board' >
         <div className={ 'gameover-text' + gameover }>
           { gameoverText }
         </div>

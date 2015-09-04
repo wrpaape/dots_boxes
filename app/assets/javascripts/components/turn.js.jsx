@@ -15,9 +15,11 @@ var Turn = React.createClass({
   render: function() {
     var dispTurn = this.state.dispTurn;
     return(
-      <label>
-        <input type='text' size={ dispTurn.length || 1 } value={ dispTurn } className='hover-child' onChange={ this.updateTurn } onKeyUp={ this.submitTurn } onBlur={ this.submitTurn } />
-        { this.getOrdinal(dispTurn) }
+      <div>
+        <label>
+          <input type='text' size={ dispTurn.length || 1 } value={ dispTurn } className='hover-child' onChange={ this.updateTurn } onKeyUp={ this.submitTurn } onBlur={ this.submitTurn } />
+          { this.getOrdinal(dispTurn) }
+        </label>
         <span onMouseLeave={ this.submitIncrements }>
           <span className='cursor-pointer hover-child' onClick={ this.incrementTurn.bind(this, 1) }>
             ▲
@@ -26,7 +28,7 @@ var Turn = React.createClass({
             ▼
           </span>
         </span>
-      </label>
+      </div>
     );
   },
   getOrdinal: function(dispTurn) {

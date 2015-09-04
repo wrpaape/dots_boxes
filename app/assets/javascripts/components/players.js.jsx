@@ -79,15 +79,15 @@ var Players = React.createClass({
       });
       var headerRow = [<thead key='header-row'><tr>{ ths }</tr></thead>];
       playersTable = [
-        <table key='players-table'>
-          { headerRow.concat(<tbody key='players-rows'>{ playersRows }</tbody>) }
+        <table key='players-table' className='players-table'>
+          { headerRow.concat(<tbody key='players-rows'>{ playersRows.concat(parentProps.getButtons(buttons, true)) }</tbody>) }
         </table>
       ];
     }
 
     return(
       <div className='players-wrap'>
-      { playersTable.concat(<div key='players-buttons' className='buttons-wrap'>{ parentProps.getButtons(buttons) }</div>) }
+        { playersTable }
       </div>
     );
   }
