@@ -4,12 +4,10 @@
 var DotsBoxes = React.createClass({
   getInitialState: function() {
     var game = this.props.game;
-
     var dimensions = game.spec.layout.dimensions;
-    // var rows = dimensions.rows.max;
-    // var cols = dimensions.columns.max;
-    var rows = 2;
-    var cols = 2;
+    var board = this.props.board;
+    var rows = board.rows;
+    var cols = board.columns;
     // var compTurns = [], playerTurns = [];
     // for(var i = 1; i < 4; i++) { compTurns.push(-i); playerTurns.push(i); }
     var turn = 1;
@@ -46,6 +44,11 @@ var DotsBoxes = React.createClass({
       boxesByScore: boxesByScore,
       winner: ''
     });
+  },
+  componentWillReceiveProps: function(nextProps) {
+    if (nextProps.board) {
+      this.setState(this.getInitialState(nextProps));
+    }
   },
   componentDidUpdate: function() {
     // this.props.saveGame(this.props.game, this.state);

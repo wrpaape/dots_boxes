@@ -13,7 +13,7 @@ var Board = React.createClass({
     var inputs = Object.keys(dispBoard).map(function(dim) {
       return(<label key={ dim } className='dimension'>
         { dim + ': ' }
-        <input type='text' size={ dispBoard[dim].length || 1 } value={ dispBoard[dim] } className='hover-child' onChange={ this.updateBoard.bind(this, dim) } onKeyUp={ this.submitBoard } />
+        <input type='text' size={ dispBoard[dim].length || 1 } value={ dispBoard[dim] } className='hover-child' onChange={ this.updateBoard.bind(this, dim) } onKeyUp={ this.submitBoard } onBlur={ this.submitBoard } />
       </label>);
     }.bind(this));
 
@@ -33,12 +33,15 @@ var Board = React.createClass({
     return dispBoard;
   },
   updateBoard: function(dim, event) {
-    this.state[dim] = event.target.value;
+    var newDim = event.target.value;
+    if (!isNaN(newDim)) {
+      this.state[dim] = newDim;
 
-    this.setState(this.state);
+      this.setState(this.state);
+    }
   },
   submitBoard: function(event) {
-    if (event.keyCode === 13) {
+    if (event.type === 'blur' || event.keyCode === 13) {
       var dispBoard = this.state;
       var board = {};
       Object.keys(dispBoard).forEach(function(dim) {

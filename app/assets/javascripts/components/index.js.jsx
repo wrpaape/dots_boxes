@@ -17,39 +17,38 @@ var Index = React.createClass({
     var idPlaying = this.state.idPlaying;
     var players = this.state.players;
     var turns = this.state.turns;
+    var board = this.state.board;
     var alert = this.state.alert;
-    var allGames = [], index = [];
+    var gamePlaying = <div />;
 
-    games.forEach(function(game) {
+    var index = games.map(function(game) {
       var id = game.id;
 
-      index.push(
+      if (id === idPlaying) {
+        var gameProps = {
+          game: game,
+          players: players,
+          turns: turns,
+          saveGame: this.saveGame,
+          quitGame: this.quitGame
+        }
+        if (board) {
+          gameProps.board = board;
+        }
+        gamePlaying = React.createElement(window[game.component], gameProps);
+      }
+
+      return(
         <div key={ 'index-' + id } className='game-wrap'>
           <div className={ 'title ' + (idSelected === 0) + ' cursor-pointer' } onClick={ this.selectGame.bind(this, id) }>
             { game.title }
           </div>
           <div className={ 'selected-game ' + (idSelected === id) }>
-            <Show game={ game } goBack={ this.selectGame } startGame={ this.startGame } setAlert={ this.setAlert } />
+            <Show game={ game } goBack={ this.selectGame.bind(null, 0) } startGame={ this.startGame.bind(null, id) } setAlert={ this.setAlert } />
           </div>
         </div>
       );
 
-      allGames.push(
-        <div key={ 'game-' + id } className={ (id === idPlaying) + ' playing id-' + id }>
-          {
-            React.createElement(
-              window[game.component],
-              {
-                game: game,
-                players: players,
-                turns: turns,
-                saveGame: this.saveGame,
-                quitGame: this.quitGame
-              }
-            )
-          }
-        </div>
-      );
     }.bind(this));
 
     return(
@@ -58,24 +57,26 @@ var Index = React.createClass({
         <div className={ 'index ' + (idPlaying === 0) }>
           { index }
         </div>
-        <div className={ 'all-games ' + (idPlaying > 0) }>
-          { allGames }
-        </div>
+        { gamePlaying }
       </div>
     );
   },
   selectGame: function(id) {
     this.setState({
-      idSelected: id || 0
+      idSelected: id
     })
   },
-  startGame: function(id, players, turns) {
-    this.setState({
+  startGame: function(id, players, turns, board) {
+    var initialGameState = {
       idSelected: 0,
       idPlaying: id,
       players: players,
       turns: turns
-    })
+    };
+
+    board ? initialGameState.board = board : delete(this.state.board);
+
+    this.setState(initialGameState);
   },
   saveGame: function(game, gameState) {
     $.ajax({

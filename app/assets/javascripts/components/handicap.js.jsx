@@ -16,7 +16,7 @@ var Handicap = React.createClass({
     var dispHandicap = this.state.dispHandicap;
     return(
       <label>
-        <input type='text' size={ dispHandicap.length || 1 } value={ dispHandicap } className='hover-child' onChange={ this.updateHandicap } onKeyUp={ this.submitHandicap } />
+        <input type='text' size={ dispHandicap.length || 1 } value={ dispHandicap } className='hover-child' onChange={ this.updateHandicap } onKeyUp={ this.submitHandicap } onBlur={ this.submitHandicap } />
         <span className='cursor-pointer hover-child' onClick={ this.incrementHandicap.bind(this, 1) }>
           ▲
         </span>
@@ -27,12 +27,15 @@ var Handicap = React.createClass({
     );
   },
   updateHandicap: function(event) {
-    this.setState({
-      dispHandicap: event.target.value
-    });
+    var newHandicap = event.target.value;
+    if (!isNaN(newHandicap)) {
+      this.setState({
+        dispHandicap: newHandicap
+      });
+    }
   },
   submitHandicap: function(event) {
-    if (event.keyCode === 13) {
+    if (event.type === 'blur' || event.keyCode === 13) {
       this.props.updatePlayer(this.state.dispHandicap - 0);
     }
   },

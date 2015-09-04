@@ -52,7 +52,7 @@ var Show = React.createClass({
       'play': {
         callBack: {
           func: this.props.startGame,
-          args: [game.id, players, turns]
+          args: [players, turns, board]
         }
       },
       'back': {
