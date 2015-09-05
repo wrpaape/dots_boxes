@@ -11,16 +11,32 @@ var Board = React.createClass({
   render: function() {
     var dispBoard = this.state;
     var inputs = Object.keys(dispBoard).map(function(dim) {
-      return(<label key={ dim } className='dimension'>
-        { dim + ': ' }
-        <input type='text' size={ dispBoard[dim].length || 1 } value={ dispBoard[dim] } className='hover-child' onChange={ this.updateBoard.bind(this, dim) } onKeyUp={ this.submitBoard } onBlur={ this.submitBoard } />
-      </label>);
+      return(
+        <td key={ dim } className='dimension'>
+          <label>
+            { dim + ': ' }
+            <input type='text' size={ dispBoard[dim].length || 1 } value={ dispBoard[dim] } className='hover-child' onChange={ this.updateBoard.bind(this, dim) } onKeyUp={ this.submitBoard } onBlur={ this.submitBoard } />
+          </label>
+          <span onMouseLeave={ this.submitIncrements }>
+            <span className='cursor-pointer hover-child' onClick={ this.incrementDim.bind(this, dim, 1) }>
+              ▲
+            </span>
+            <span className='cursor-pointer hover-child' onClick={ this.incrementDim.bind(this, dim, -1) }>
+              ▼
+            </span>
+          </span>
+        </td>
+      );
     }.bind(this));
 
     return(
-      <div>
-        { inputs }
-      </div>
+      <table>
+        <tbody>
+          <tr>
+            { inputs }
+          </tr>
+        </tbody>
+      </table>
     );
   },
   getDispBoard: function(props) {
@@ -32,23 +48,32 @@ var Board = React.createClass({
 
     return dispBoard;
   },
+  getBoard: function() {
+    var dispBoard = this.state;
+    var board = {};
+    Object.keys(dispBoard).forEach(function(dim) {
+      board[dim] = dispBoard[dim] - 0;
+    });
+
+    return board;
+  },
   updateBoard: function(dim, event) {
     var newDim = event.target.value;
     if (!isNaN(newDim)) {
       this.state[dim] = newDim;
-
       this.setState(this.state);
     }
   },
   submitBoard: function(event) {
     if (event.type === 'blur' || event.keyCode === 13) {
-      var dispBoard = this.state;
-      var board = {};
-      Object.keys(dispBoard).forEach(function(dim) {
-        board[dim] = dispBoard[dim] - 0;
-      });
-
-      this.props.updateBoard(board);
+      this.props.updateBoard(this.getBoard());
     }
+  },
+  incrementDim: function(dim, inc) {
+    this.state[dim] = (this.state[dim] - 0 + inc).toString();
+    this.setState(this.state);
+  },
+  submitIncrements: function() {
+    this.props.updateBoard(this.getBoard());
   }
 });

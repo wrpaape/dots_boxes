@@ -78,7 +78,7 @@ table {
   width: 100%;
   table-layout: fixed;
   padding: 12px;
-  text-align: right;
+  // text-align: right;
   cursor: default;
   tbody tr, .hover-child {
     @include transition-out;
@@ -92,16 +92,10 @@ table {
   }
   tr {
     &:last-child td {
-      text-align: center;
       padding-top: 12px;
-      padding-right: 48px;
-      &:nth-child(4) {
-        padding-right: 96px;
-      }
     }
     th, td {
       font-weight: normal;
-      padding-right: 96px;
       &:nth-child(4) {
         text-align: center;
       }
@@ -197,8 +191,3 @@ div.dots-boxes-board {
   padding: 12px;
 }
 
-.dimension {
-  display: inline-block;
-  margin: 12px;
-  font-weight: bold;
-}
