@@ -75,10 +75,11 @@ input {
 }
 
 table {
-  width: 100%;
-  table-layout: fixed;
+  &.players-table {
+    width: 100%;
+    table-layout: fixed;
+  }
   padding: 12px;
-  // text-align: right;
   cursor: default;
   tbody tr, .hover-child {
     @include transition-out;
@@ -91,8 +92,11 @@ table {
     }
   }
   tr {
-    &:last-child td {
+    &:last-child:not(:first-child) td {
       padding-top: 12px;
+    }
+    &:first-child:last-child td {
+      width: 200px;
     }
     th, td {
       font-weight: normal;
