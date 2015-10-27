@@ -6,7 +6,7 @@ class Game < ActiveRecord::Base
   has_one :spec
 
   def self.all_as_json
-    all.as_json(
+    includes(spec: [{ score: :limit }, :total, :player, :computer, { layout: :dims }]).as_json(
       include: {
         spec: {
           include: [
